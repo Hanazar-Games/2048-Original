@@ -2,7 +2,7 @@
 <html>
 <head>
   <meta charset="utf-8">
-  <title>2048</title>
+  <title>2048 Original | Hanazar Products</title>
 
   <link href="style/main.css" rel="stylesheet" type="text/css">
   <link rel="shortcut icon" href="favicon.ico">
@@ -17,9 +17,34 @@
   <meta name="viewport" content="width=device-width, target-densitydpi=160dpi, initial-scale=1.0, maximum-scale=1, user-scalable=no, minimal-ui">
 </head>
 <body>
+  <!-- Splash Screen -->
+  <div id="splash-screen">
+    <div class="splash-particles">
+      <span></span><span></span><span></span><span></span><span></span>
+      <span></span><span></span><span></span><span></span><span></span>
+      <span></span><span></span><span></span><span></span><span></span>
+      <span></span><span></span><span></span><span></span><span></span>
+    </div>
+    <div class="splash-flash" id="splash-flash"></div>
+    <div class="splash-content">
+      <h1 class="splash-title">Hanazar Products</h1>
+      <p class="splash-subtitle">2048 Original</p>
+      <div class="splash-progress-wrapper">
+        <div class="splash-progress-bar">
+          <div class="splash-progress-fill" id="splash-progress-fill"></div>
+          <div class="splash-progress-shine"></div>
+        </div>
+        <div class="splash-progress-info">
+          <span class="splash-progress-text" id="splash-progress-text">0%</span>
+          <span class="splash-progress-status" id="splash-progress-status">Initializing engine...</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <div class="container">
     <div class="heading">
-      <h1 class="title">2048</h1>
+      <h1 class="title">2048<span class="hanazar-badge">by HANAZAR</span></h1>
       <div class="scores-container">
         <div class="score-container">0</div>
         <div class="best-container">0</div>
@@ -27,7 +52,7 @@
     </div>
 
     <div class="above-game">
-      <p class="game-intro">Join the numbers and get to the <strong>2048 tile!</strong></p>
+      <p class="game-intro">A Hanazar Games experience — Join the numbers and get to the <strong>2048 tile!</strong></p>
       <a class="restart-button">New Game</a>
     </div>
 
@@ -77,11 +102,11 @@
     </p>
     <hr>
     <p>
-    <strong class="important">Note:</strong> This site is the official version of 2048. You can play it on your phone via <a href="http://git.io/2048">http://git.io/2048.</a> All other apps or sites are derivatives or fakes, and should be used with caution.
+    <strong class="important">Note:</strong> Brought to you by <strong>Hanazar Games</strong>. Originally created by <a href="http://gabrielecirulli.com" target="_blank">Gabriele Cirulli.</a> Based on <a href="https://itunes.apple.com/us/app/1024!/id823499224" target="_blank">1024 by Veewo Studio</a> and conceptually similar to <a href="http://asherv.com/threes/" target="_blank">Threes by Asher Vollmer.</a>
     </p>
     <hr>
-    <p>
-    Created by <a href="http://gabrielecirulli.com" target="_blank">Gabriele Cirulli.</a> Based on <a href="https://itunes.apple.com/us/app/1024!/id823499224" target="_blank">1024 by Veewo Studio</a> and conceptually similar to <a href="http://asherv.com/threes/" target="_blank">Threes by Asher Vollmer.</a>
+    <p style="text-align:center; font-size: 14px; color: #bbada0;">
+      <strong>🎮 HANAZAR GAMES 🎮</strong> — Crafting timeless digital experiences.
     </p>
   </div>
 
@@ -95,5 +120,77 @@
   <script src="js/local_storage_manager.js"></script>
   <script src="js/game_manager.js"></script>
   <script src="js/application.js"></script>
+
+  <script>
+    (function() {
+      var splash = document.getElementById('splash-screen');
+      var fill = document.getElementById('splash-progress-fill');
+      var text = document.getElementById('splash-progress-text');
+      var status = document.getElementById('splash-progress-status');
+      var flash = document.getElementById('splash-flash');
+
+      var statuses = [
+        "Initializing engine...",
+        "Loading assets...",
+        "Building grid...",
+        "Spawning tiles...",
+        "Ready to play!"
+      ];
+
+      var startTime = Date.now();
+      var duration = 2500;
+      var gameInitialized = false;
+
+      function initGame() {
+        if (gameInitialized) return;
+        gameInitialized = true;
+        window._hanazarGameInitialized = true;
+        window.requestAnimationFrame(function () {
+          new GameManager(4, KeyboardInputManager, HTMLActuator, LocalStorageManager);
+        });
+      }
+
+      function updateProgress() {
+        var elapsed = Date.now() - startTime;
+        var progress = Math.min(elapsed / duration, 1);
+
+        // Ease-out cubic for realistic loading feel + micro jitter
+        var eased = 1 - Math.pow(1 - progress, 3);
+        var jitter = (progress < 0.95) ? (Math.random() - 0.5) * 1.5 : 0;
+        var percent = Math.min(100, Math.max(0, Math.floor(eased * 100 + jitter)));
+
+        fill.style.width = percent + '%';
+        text.textContent = percent + '%';
+
+        var statusIndex = Math.min(Math.floor(progress * statuses.length), statuses.length - 1);
+        status.textContent = statuses[statusIndex];
+
+        if (progress < 1) {
+          requestAnimationFrame(updateProgress);
+        } else {
+          fill.style.width = '100%';
+          text.textContent = '100%';
+          status.textContent = statuses[statuses.length - 1];
+
+          setTimeout(function() {
+            // Flash burst effect
+            flash.classList.add('splash-flash-active');
+            setTimeout(function() {
+              flash.classList.remove('splash-flash-active');
+            }, 400);
+
+            splash.classList.add('splash-fade-out');
+            document.body.classList.add('game-revealed');
+            initGame();
+            setTimeout(function() {
+              splash.style.display = 'none';
+            }, 600);
+          }, 300);
+        }
+      }
+
+      requestAnimationFrame(updateProgress);
+    })();
+  </script>
 </body>
 </html>
