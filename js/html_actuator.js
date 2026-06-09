@@ -4,6 +4,8 @@ function HTMLActuator() {
   this.bestContainer    = document.querySelector(".best-container");
   this.messageContainer = document.querySelector(".game-message");
   this.movesContainer   = document.querySelector(".moves-container");
+  this.timerContainer   = document.querySelector(".timer-container");
+  this.bestMovesContainer = document.querySelector(".best-moves-container");
   this.undoButton       = document.querySelector(".undo-button");
 
   this.score = 0;
@@ -26,6 +28,8 @@ HTMLActuator.prototype.actuate = function (grid, metadata) {
     self.updateScore(metadata.score);
     self.updateBestScore(metadata.bestScore);
     self.updateMoves(metadata.moveCount);
+    self.updateTimer(metadata.elapsedTime);
+    self.updateBestMoves(metadata.bestMoves);
     self.updateUndoButton(metadata.undoAvailable);
 
     if (metadata.terminated) {
@@ -134,6 +138,18 @@ HTMLActuator.prototype.updateBestScore = function (bestScore) {
 
 HTMLActuator.prototype.updateMoves = function (moveCount) {
   this.movesContainer.textContent = moveCount || 0;
+};
+
+HTMLActuator.prototype.updateTimer = function (seconds) {
+  if (!this.timerContainer) return;
+  var m = Math.floor(seconds / 60);
+  var s = seconds % 60;
+  this.timerContainer.textContent = (m < 10 ? "0" + m : m) + ":" + (s < 10 ? "0" + s : s);
+};
+
+HTMLActuator.prototype.updateBestMoves = function (bestMoves) {
+  if (!this.bestMovesContainer) return;
+  this.bestMovesContainer.textContent = bestMoves || "—";
 };
 
 HTMLActuator.prototype.updateUndoButton = function (available) {

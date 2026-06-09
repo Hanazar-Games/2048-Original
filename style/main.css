@@ -798,7 +798,7 @@ hr {
   margin-top: 20px;
 }
 
-.theme-toggle, .sound-toggle {
+.theme-toggle, .sound-toggle, .share-button {
   display: inline-block;
   background: #3d3d5c;
   border-radius: 20px;
@@ -812,11 +812,11 @@ hr {
   transition: background 0.15s ease, transform 0.1s ease;
   border: 1px solid rgba(255, 255, 255, 0.08);
 }
-.theme-toggle:hover, .sound-toggle:hover {
+.theme-toggle:hover, .sound-toggle:hover, .share-button:hover {
   background: #4d4d6c;
   transform: translateY(-1px);
 }
-.theme-toggle:active, .sound-toggle:active {
+.theme-toggle:active, .sound-toggle:active, .share-button:active {
   transform: translateY(0);
 }
 
@@ -839,7 +839,7 @@ hr {
   .settings-bar {
     gap: 8px;
   }
-  .theme-toggle, .sound-toggle {
+  .theme-toggle, .sound-toggle, .share-button {
     font-size: 12px;
     padding: 5px 12px;
   }
@@ -1276,6 +1276,67 @@ body.game-revealed .container {
   content: "Moves";
 }
 
+/* Timer container */
+.timer-container {
+  position: relative;
+  display: inline-block;
+  background: #8f7a66;
+  padding: 15px 25px;
+  font-size: 22px;
+  height: 25px;
+  line-height: 47px;
+  font-weight: bold;
+  border-radius: 3px;
+  color: white;
+  margin-top: 8px;
+  margin-left: 8px;
+  text-align: center;
+  min-width: 60px;
+  letter-spacing: 1px;
+}
+.timer-container:after {
+  position: absolute;
+  width: 100%;
+  top: 10px;
+  left: 0;
+  text-transform: uppercase;
+  font-size: 13px;
+  line-height: 13px;
+  text-align: center;
+  color: #eee4da;
+  content: "Time";
+}
+
+/* Best moves container */
+.best-moves-container {
+  position: relative;
+  display: inline-block;
+  background: #8f7a66;
+  padding: 15px 25px;
+  font-size: 25px;
+  height: 25px;
+  line-height: 47px;
+  font-weight: bold;
+  border-radius: 3px;
+  color: white;
+  margin-top: 8px;
+  margin-left: 8px;
+  text-align: center;
+  min-width: 40px;
+}
+.best-moves-container:after {
+  position: absolute;
+  width: 100%;
+  top: 10px;
+  left: 0;
+  text-transform: uppercase;
+  font-size: 13px;
+  line-height: 13px;
+  text-align: center;
+  color: #eee4da;
+  content: "Best Mv";
+}
+
 /* Merge particle explosion */
 .merge-particle {
   position: absolute;
@@ -1389,15 +1450,19 @@ body.dark-theme .tile.tile-2048 .tile-inner {
     top: -2px;
   }
 
-  .moves-container {
+  .moves-container,
+  .timer-container,
+  .best-moves-container {
     margin-top: 0;
     padding: 15px 10px;
     min-width: 30px;
-    font-size: 20px;
+    font-size: 18px;
     line-height: 40px;
     height: 20px;
   }
-  .moves-container:after {
+  .moves-container:after,
+  .timer-container:after,
+  .best-moves-container:after {
     font-size: 11px;
     line-height: 11px;
     top: 8px;

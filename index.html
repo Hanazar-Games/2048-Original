@@ -49,6 +49,8 @@
         <div class="score-container">0</div>
         <div class="best-container">0</div>
         <div class="moves-container">0</div>
+        <div class="timer-container">00:00</div>
+        <div class="best-moves-container">—</div>
       </div>
     </div>
 
@@ -115,6 +117,7 @@
     <div class="settings-bar">
       <a class="theme-toggle" id="theme-toggle" title="Toggle theme">🌙 Theme</a>
       <a class="sound-toggle" id="sound-toggle" title="Toggle sound">🔊 Sound</a>
+      <a class="share-button" id="share-button" title="Copy score to clipboard">📋 Share</a>
     </div>
   </div>
 
@@ -253,6 +256,39 @@
           } catch(e) {}
         }
         updateSoundIcon();
+      });
+
+      // Share button
+      var shareBtn = document.getElementById('share-button');
+      shareBtn.addEventListener('click', function() {
+        var scoreEl = document.querySelector('.score-container');
+        var bestEl = document.querySelector('.best-container');
+        var movesEl = document.querySelector('.moves-container');
+        var timerEl = document.querySelector('.timer-container');
+        var score = scoreEl ? scoreEl.childNodes[0].textContent.trim() : '0';
+        var best = bestEl ? bestEl.textContent.trim() : '0';
+        var moves = movesEl ? movesEl.textContent.trim() : '0';
+        var time = timerEl ? timerEl.textContent.trim() : '00:00';
+        var text = '🎮 Hanazar 2048 — Score: ' + score +
+                   ' | Best: ' + best +
+                   ' | Moves: ' + moves +
+                   ' | Time: ' + time +
+                   ' | Play at ' + window.location.href;
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText(text).then(function() {
+            shareBtn.textContent = '✅ Copied!';
+            setTimeout(function() { shareBtn.textContent = '📋 Share'; }, 1500);
+          });
+        } else {
+          var ta = document.createElement('textarea');
+          ta.value = text;
+          document.body.appendChild(ta);
+          ta.select();
+          document.execCommand('copy');
+          document.body.removeChild(ta);
+          shareBtn.textContent = '✅ Copied!';
+          setTimeout(function() { shareBtn.textContent = '📋 Share'; }, 1500);
+        }
       });
 
       // Initialize

@@ -7,6 +7,7 @@ function GameManager(size, InputManager, Actuator, StorageManager) {
 
   this.startTiles     = 2;
   this.moveCount      = 0;
+  this.startTime      = Date.now();
 
   this.inputManager.on("move", this.move.bind(this));
   this.inputManager.on("restart", this.restart.bind(this));
@@ -62,6 +63,7 @@ GameManager.prototype.restart = function () {
   this.storageManager.clearGameState();
   this.actuator.continueGame(); // Clear the game won/lost message
   this.moveCount = 0;
+  this.startTime = Date.now();
   this.setup();
   if (this.audioManager) this.audioManager.playClick();
 };
@@ -97,6 +99,7 @@ GameManager.prototype.setup = function () {
     this.won         = false;
     this.keepPlaying = false;
     this.moveCount   = 0;
+    this.startTime   = Date.now();
 
     // Add the initial tiles
     this.addStartTiles();
@@ -136,13 +139,24 @@ GameManager.prototype.actuate = function () {
     this.storageManager.setGameState(this.serialize());
   }
 
+  // Update best moves when game ends or is won
+  var bestMoves = this.storageManager.getBestMoves();
+  if ((this.over || this.won) && this.moveCount > 0) {
+    if (!bestMoves || this.moveCount < bestMoves) {
+      this.storageManager.setBestMoves(this.moveCount);
+      bestMoves = this.moveCount;
+    }
+  }
+
   this.actuator.actuate(this.grid, {
     score:         this.score,
     over:          this.over,
     won:           this.won,
     bestScore:     this.storageManager.getBestScore(),
+    bestMoves:     bestMoves || "—",
     terminated:    this.isGameTerminated(),
     moveCount:     this.moveCount,
+    elapsedTime:   this.getElapsedTime(),
     undoAvailable: !!this.undoState && !this.over
   });
 
