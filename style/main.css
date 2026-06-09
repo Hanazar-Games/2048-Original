@@ -1158,6 +1158,147 @@ body.game-revealed .container {
   100% { opacity: 1; transform: scale(1) translateX(0); }
 }
 
+/* Moves container */
+.moves-container {
+  position: relative;
+  display: inline-block;
+  background: #8f7a66;
+  padding: 15px 25px;
+  font-size: 25px;
+  height: 25px;
+  line-height: 47px;
+  font-weight: bold;
+  border-radius: 3px;
+  color: white;
+  margin-top: 8px;
+  margin-left: 8px;
+  text-align: center;
+  min-width: 40px;
+}
+.moves-container:after {
+  position: absolute;
+  width: 100%;
+  top: 10px;
+  left: 0;
+  text-transform: uppercase;
+  font-size: 13px;
+  line-height: 13px;
+  text-align: center;
+  color: #eee4da;
+  content: "Moves";
+}
+
+/* Merge particle explosion */
+.merge-particle {
+  position: absolute;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 50;
+  animation: merge-particle-burst 0.6s ease-out forwards;
+}
+
+@keyframes merge-particle-burst {
+  0% {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
+  50% {
+    opacity: 0.9;
+  }
+  100% {
+    opacity: 0;
+    transform: translate(calc(-50% + var(--tx)), calc(-50% + var(--ty))) scale(0.2);
+  }
+}
+
+/* Dark theme overrides (applied to body via class or default) */
+body.dark-theme,
+body {
+  background: #1a1a2e;
+  color: #e0d8d0;
+}
+
+body.dark-theme a,
+body a {
+  color: #e0d8d0;
+}
+
+body.dark-theme .game-container,
+body .game-container {
+  background: #2d2d44;
+}
+
+body.dark-theme .grid-cell,
+body .grid-cell {
+  background: rgba(255, 255, 255, 0.06);
+}
+
+body.dark-theme .score-container,
+body.dark-theme .best-container,
+body.dark-theme .moves-container,
+body .score-container,
+body .best-container,
+body .moves-container {
+  background: #3d3d5c;
+}
+
+body.dark-theme .score-container:after,
+body.dark-theme .best-container:after,
+body.dark-theme .moves-container:after,
+body .score-container:after,
+body .best-container:after,
+body .moves-container:after {
+  color: rgba(255, 255, 255, 0.5);
+}
+
+body.dark-theme .restart-button,
+body .restart-button {
+  background: #3d3d5c;
+}
+
+body.dark-theme .game-message,
+body .game-message {
+  background: rgba(26, 26, 46, 0.7);
+}
+
+body.dark-theme .game-message.game-won,
+body .game-message.game-won {
+  background: rgba(237, 194, 46, 0.5);
+}
+
+body.dark-theme hr,
+body hr {
+  border-bottom-color: #3d3d5c;
+}
+
+/* Tile glow enhancements for dark theme */
+body.dark-theme .tile.tile-128 .tile-inner,
+body .tile.tile-128 .tile-inner {
+  box-shadow: 0 0 30px 10px rgba(243, 215, 116, 0.3), inset 0 0 0 1px rgba(255, 255, 255, 0.2);
+}
+
+body.dark-theme .tile.tile-256 .tile-inner,
+body .tile.tile-256 .tile-inner {
+  box-shadow: 0 0 30px 10px rgba(243, 215, 116, 0.4), inset 0 0 0 1px rgba(255, 255, 255, 0.25);
+}
+
+body.dark-theme .tile.tile-512 .tile-inner,
+body .tile.tile-512 .tile-inner {
+  box-shadow: 0 0 30px 10px rgba(243, 215, 116, 0.5), inset 0 0 0 1px rgba(255, 255, 255, 0.3);
+}
+
+body.dark-theme .tile.tile-1024 .tile-inner,
+body .tile.tile-1024 .tile-inner {
+  box-shadow: 0 0 30px 10px rgba(243, 215, 116, 0.6), inset 0 0 0 1px rgba(255, 255, 255, 0.35);
+}
+
+body.dark-theme .tile.tile-2048 .tile-inner,
+body .tile.tile-2048 .tile-inner {
+  box-shadow: 0 0 40px 15px rgba(243, 215, 116, 0.7), inset 0 0 0 1px rgba(255, 255, 255, 0.4);
+}
+
 /* Mobile responsive splash */
 @media screen and (max-width: 520px) {
   .splash-title {
@@ -1176,5 +1317,19 @@ body.game-revealed .container {
     padding: 2px 6px;
     margin-left: 6px;
     top: -2px;
+  }
+
+  .moves-container {
+    margin-top: 0;
+    padding: 15px 10px;
+    min-width: 30px;
+    font-size: 20px;
+    line-height: 40px;
+    height: 20px;
+  }
+  .moves-container:after {
+    font-size: 11px;
+    line-height: 11px;
+    top: 8px;
   }
 }

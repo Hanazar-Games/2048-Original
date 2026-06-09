@@ -3,21 +3,28 @@ function GameManager(size, InputManager, Actuator, StorageManager) {
   this.inputManager   = new InputManager;
   this.storageManager = new StorageManager;
   this.actuator       = new Actuator;
+  this.audioManager   = new AudioManager();
 
   this.startTiles     = 2;
+  this.moveCount      = 0;
 
   this.inputManager.on("move", this.move.bind(this));
   this.inputManager.on("restart", this.restart.bind(this));
   this.inputManager.on("keepPlaying", this.keepPlaying.bind(this));
 
   this.setup();
+
+  // Expose audio manager globally for html_actuator
+  window.gameAudioManager = this.audioManager;
 }
 
 // Restart the game
 GameManager.prototype.restart = function () {
   this.storageManager.clearGameState();
   this.actuator.continueGame(); // Clear the game won/lost message
+  this.moveCount = 0;
   this.setup();
+  if (this.audioManager) this.audioManager.playClick();
 };
 
 // Keep playing after winning (allows going over 2048)
@@ -43,12 +50,14 @@ GameManager.prototype.setup = function () {
     this.over        = previousState.over;
     this.won         = previousState.won;
     this.keepPlaying = previousState.keepPlaying;
+    this.moveCount   = previousState.moveCount || 0;
   } else {
     this.grid        = new Grid(this.size);
     this.score       = 0;
     this.over        = false;
     this.won         = false;
     this.keepPlaying = false;
+    this.moveCount   = 0;
 
     // Add the initial tiles
     this.addStartTiles();
@@ -93,7 +102,8 @@ GameManager.prototype.actuate = function () {
     over:       this.over,
     won:        this.won,
     bestScore:  this.storageManager.getBestScore(),
-    terminated: this.isGameTerminated()
+    terminated: this.isGameTerminated(),
+    moveCount:  this.moveCount
   });
 
 };
@@ -105,7 +115,8 @@ GameManager.prototype.serialize = function () {
     score:       this.score,
     over:        this.over,
     won:         this.won,
-    keepPlaying: this.keepPlaying
+    keepPlaying: this.keepPlaying,
+    moveCount:   this.moveCount
   };
 };
 
@@ -166,6 +177,9 @@ GameManager.prototype.move = function (direction) {
           // Update the score
           self.score += merged.value;
 
+          // Play merge sound
+          if (self.audioManager) self.audioManager.playMerge(merged.value);
+
           // The mighty 2048 tile
           if (merged.value === 2048) self.won = true;
         } else {
@@ -180,6 +194,7 @@ GameManager.prototype.move = function (direction) {
   });
 
   if (moved) {
+    this.moveCount++;
     this.addRandomTile();
 
     if (!this.movesAvailable()) {
@@ -187,6 +202,7 @@ GameManager.prototype.move = function (direction) {
     }
 
     this.actuate();
+    if (this.audioManager) this.audioManager.playMove();
   }
 };
 
