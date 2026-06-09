@@ -4,6 +4,7 @@ function HTMLActuator() {
   this.bestContainer    = document.querySelector(".best-container");
   this.messageContainer = document.querySelector(".game-message");
   this.movesContainer   = document.querySelector(".moves-container");
+  this.undoButton       = document.querySelector(".undo-button");
 
   this.score = 0;
 }
@@ -25,6 +26,7 @@ HTMLActuator.prototype.actuate = function (grid, metadata) {
     self.updateScore(metadata.score);
     self.updateBestScore(metadata.bestScore);
     self.updateMoves(metadata.moveCount);
+    self.updateUndoButton(metadata.undoAvailable);
 
     if (metadata.terminated) {
       if (metadata.over) {
@@ -132,6 +134,17 @@ HTMLActuator.prototype.updateBestScore = function (bestScore) {
 
 HTMLActuator.prototype.updateMoves = function (moveCount) {
   this.movesContainer.textContent = moveCount || 0;
+};
+
+HTMLActuator.prototype.updateUndoButton = function (available) {
+  if (!this.undoButton) return;
+  if (available) {
+    this.undoButton.classList.remove("undo-disabled");
+    this.undoButton.textContent = "Undo (Z)";
+  } else {
+    this.undoButton.classList.add("undo-disabled");
+    this.undoButton.textContent = "Undo";
+  }
 };
 
 HTMLActuator.prototype.spawnMergeParticles = function (tile) {

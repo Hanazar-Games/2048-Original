@@ -1,6 +1,10 @@
 function AudioManager() {
   this.initialized = false;
   this.audioCtx = null;
+  this.muted = false;
+  try {
+    this.muted = localStorage.getItem("hanazar_muted") === "true";
+  } catch (e) {}
 }
 
 AudioManager.prototype.init = function () {
@@ -13,7 +17,16 @@ AudioManager.prototype.init = function () {
   }
 };
 
+AudioManager.prototype.toggleMute = function () {
+  this.muted = !this.muted;
+  try {
+    localStorage.setItem("hanazar_muted", this.muted ? "true" : "false");
+  } catch (e) {}
+  return this.muted;
+};
+
 AudioManager.prototype.playTone = function (freq, duration, type, volume, when) {
+  if (this.muted) return;
   if (!this.initialized || !this.audioCtx) return;
   var ctx = this.audioCtx;
   var t = when || ctx.currentTime;
@@ -35,6 +48,7 @@ AudioManager.prototype.playTone = function (freq, duration, type, volume, when) 
 
 // Short "whoosh" slide for tile movement
 AudioManager.prototype.playMove = function () {
+  if (this.muted) return;
   if (!this.initialized) this.init();
   if (!this.audioCtx) return;
   var ctx = this.audioCtx;
@@ -57,6 +71,7 @@ AudioManager.prototype.playMove = function () {
 
 // Bright "ding" for merging tiles; pitch rises with tile value
 AudioManager.prototype.playMerge = function (value) {
+  if (this.muted) return;
   if (!this.initialized) this.init();
   if (!this.audioCtx) return;
   var baseFreq = 300;
@@ -76,6 +91,7 @@ AudioManager.prototype.playMerge = function (value) {
 
 // Rising arpeggio for winning
 AudioManager.prototype.playWin = function () {
+  if (this.muted) return;
   if (!this.initialized) this.init();
   if (!this.audioCtx) return;
   var ctx = this.audioCtx;
@@ -98,6 +114,7 @@ AudioManager.prototype.playWin = function () {
 
 // Descending tone for game over
 AudioManager.prototype.playGameOver = function () {
+  if (this.muted) return;
   if (!this.initialized) this.init();
   if (!this.audioCtx) return;
   var ctx = this.audioCtx;
@@ -120,6 +137,7 @@ AudioManager.prototype.playGameOver = function () {
 
 // UI click sound
 AudioManager.prototype.playClick = function () {
+  if (this.muted) return;
   if (!this.initialized) this.init();
   if (!this.audioCtx) return;
   var ctx = this.audioCtx;

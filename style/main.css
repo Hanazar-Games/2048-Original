@@ -758,6 +758,94 @@ hr {
     margin-top: 30px !important; } }
 
 /* ============================================
+   GAME CONTROLS & SETTINGS
+   ============================================ */
+
+.game-actions {
+  float: right;
+  display: flex;
+  gap: 8px;
+}
+
+.undo-button {
+  display: inline-block;
+  background: #6b5b4f;
+  border-radius: 3px;
+  padding: 0 16px;
+  text-decoration: none;
+  color: #f9f6f2;
+  height: 40px;
+  line-height: 42px;
+  text-align: center;
+  cursor: pointer;
+  user-select: none;
+  transition: background 0.15s ease, opacity 0.15s ease;
+}
+.undo-button:hover {
+  background: #8f7a66;
+}
+.undo-button.undo-disabled {
+  background: #4a4a5a;
+  color: rgba(249, 246, 242, 0.4);
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+.settings-bar {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  margin-top: 20px;
+}
+
+.theme-toggle, .sound-toggle {
+  display: inline-block;
+  background: #3d3d5c;
+  border-radius: 20px;
+  padding: 6px 16px;
+  text-decoration: none;
+  color: #e0d8d0;
+  font-size: 13px;
+  font-weight: bold;
+  cursor: pointer;
+  user-select: none;
+  transition: background 0.15s ease, transform 0.1s ease;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+.theme-toggle:hover, .sound-toggle:hover {
+  background: #4d4d6c;
+  transform: translateY(-1px);
+}
+.theme-toggle:active, .sound-toggle:active {
+  transform: translateY(0);
+}
+
+@media screen and (max-width: 520px) {
+  .game-actions {
+    float: none;
+    width: 100%;
+    justify-content: space-between;
+    margin-top: 10px;
+  }
+  .undo-button {
+    flex: 1;
+    padding: 0;
+    font-size: 14px;
+  }
+  .restart-button {
+    flex: 1;
+    margin-top: 0 !important;
+  }
+  .settings-bar {
+    gap: 8px;
+  }
+  .theme-toggle, .sound-toggle {
+    font-size: 12px;
+    padding: 5px 12px;
+  }
+}
+
+/* ============================================
    HANAZAR PRODUCTS — SPLASH SCREEN
    Epic loading animation with realistic progress
    ============================================ */
@@ -1214,8 +1302,7 @@ body.game-revealed .container {
 }
 
 /* Dark theme overrides (applied to body via class or default) */
-body.dark-theme,
-body {
+body.dark-theme {
   background: #1a1a2e;
   color: #e0d8d0;
 }
@@ -1225,77 +1312,60 @@ body a {
   color: #e0d8d0;
 }
 
-body.dark-theme .game-container,
-body .game-container {
+body.dark-theme .game-container {
   background: #2d2d44;
 }
 
-body.dark-theme .grid-cell,
-body .grid-cell {
+body.dark-theme .grid-cell {
   background: rgba(255, 255, 255, 0.06);
 }
 
 body.dark-theme .score-container,
 body.dark-theme .best-container,
-body.dark-theme .moves-container,
-body .score-container,
-body .best-container,
-body .moves-container {
+body.dark-theme .moves-container {
   background: #3d3d5c;
 }
 
 body.dark-theme .score-container:after,
 body.dark-theme .best-container:after,
-body.dark-theme .moves-container:after,
-body .score-container:after,
-body .best-container:after,
-body .moves-container:after {
+body.dark-theme .moves-container:after {
   color: rgba(255, 255, 255, 0.5);
 }
 
-body.dark-theme .restart-button,
-body .restart-button {
+body.dark-theme .restart-button {
   background: #3d3d5c;
 }
 
-body.dark-theme .game-message,
-body .game-message {
+body.dark-theme .game-message {
   background: rgba(26, 26, 46, 0.7);
 }
 
-body.dark-theme .game-message.game-won,
-body .game-message.game-won {
+body.dark-theme .game-message.game-won {
   background: rgba(237, 194, 46, 0.5);
 }
 
-body.dark-theme hr,
-body hr {
+body.dark-theme hr {
   border-bottom-color: #3d3d5c;
 }
 
 /* Tile glow enhancements for dark theme */
-body.dark-theme .tile.tile-128 .tile-inner,
-body .tile.tile-128 .tile-inner {
+body.dark-theme .tile.tile-128 .tile-inner {
   box-shadow: 0 0 30px 10px rgba(243, 215, 116, 0.3), inset 0 0 0 1px rgba(255, 255, 255, 0.2);
 }
 
-body.dark-theme .tile.tile-256 .tile-inner,
-body .tile.tile-256 .tile-inner {
+body.dark-theme .tile.tile-256 .tile-inner {
   box-shadow: 0 0 30px 10px rgba(243, 215, 116, 0.4), inset 0 0 0 1px rgba(255, 255, 255, 0.25);
 }
 
-body.dark-theme .tile.tile-512 .tile-inner,
-body .tile.tile-512 .tile-inner {
+body.dark-theme .tile.tile-512 .tile-inner {
   box-shadow: 0 0 30px 10px rgba(243, 215, 116, 0.5), inset 0 0 0 1px rgba(255, 255, 255, 0.3);
 }
 
-body.dark-theme .tile.tile-1024 .tile-inner,
-body .tile.tile-1024 .tile-inner {
+body.dark-theme .tile.tile-1024 .tile-inner {
   box-shadow: 0 0 30px 10px rgba(243, 215, 116, 0.6), inset 0 0 0 1px rgba(255, 255, 255, 0.35);
 }
 
-body.dark-theme .tile.tile-2048 .tile-inner,
-body .tile.tile-2048 .tile-inner {
+body.dark-theme .tile.tile-2048 .tile-inner {
   box-shadow: 0 0 40px 15px rgba(243, 215, 116, 0.7), inset 0 0 0 1px rgba(255, 255, 255, 0.4);
 }
 

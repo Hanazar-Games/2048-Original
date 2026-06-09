@@ -11,12 +11,51 @@ function GameManager(size, InputManager, Actuator, StorageManager) {
   this.inputManager.on("move", this.move.bind(this));
   this.inputManager.on("restart", this.restart.bind(this));
   this.inputManager.on("keepPlaying", this.keepPlaying.bind(this));
+  this.inputManager.on("undo", this.undo.bind(this));
 
   this.setup();
 
   // Expose audio manager globally for html_actuator
   window.gameAudioManager = this.audioManager;
 }
+
+// Save current state for undo
+GameManager.prototype.saveUndoState = function () {
+  this.undoState = {
+    grid:        this.grid.serialize(),
+    score:       this.score,
+    over:        this.over,
+    won:         this.won,
+    keepPlaying: this.keepPlaying,
+    moveCount:   this.moveCount
+  };
+};
+
+// Undo last move
+GameManager.prototype.undo = function () {
+  if (!this.undoState || this.over) return;
+
+  this.grid        = new Grid(this.undoState.grid.size,
+                              this.undoState.grid.cells);
+  this.score       = this.undoState.score;
+  this.over        = this.undoState.over;
+  this.won         = this.undoState.won;
+  this.keepPlaying = this.undoState.keepPlaying;
+  this.moveCount   = this.undoState.moveCount;
+  this.undoState   = null;
+
+  this.actuator.actuate(this.grid, {
+    score:      this.score,
+    over:       this.over,
+    won:        this.won,
+    bestScore:  this.storageManager.getBestScore(),
+    terminated: this.isGameTerminated(),
+    moveCount:  this.moveCount,
+    undoAvailable: false
+  });
+
+  if (this.audioManager) this.audioManager.playClick();
+};
 
 // Restart the game
 GameManager.prototype.restart = function () {
@@ -98,12 +137,13 @@ GameManager.prototype.actuate = function () {
   }
 
   this.actuator.actuate(this.grid, {
-    score:      this.score,
-    over:       this.over,
-    won:        this.won,
-    bestScore:  this.storageManager.getBestScore(),
-    terminated: this.isGameTerminated(),
-    moveCount:  this.moveCount
+    score:         this.score,
+    over:          this.over,
+    won:           this.won,
+    bestScore:     this.storageManager.getBestScore(),
+    terminated:    this.isGameTerminated(),
+    moveCount:     this.moveCount,
+    undoAvailable: !!this.undoState && !this.over
   });
 
 };
@@ -143,6 +183,9 @@ GameManager.prototype.move = function (direction) {
   var self = this;
 
   if (this.isGameTerminated()) return; // Don't do anything if the game's over
+
+  // Save state before move for undo
+  this.saveUndoState();
 
   var cell, tile;
 

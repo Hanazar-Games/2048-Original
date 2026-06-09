@@ -54,7 +54,10 @@
 
     <div class="above-game">
       <p class="game-intro">A Hanazar Games experience — Join the numbers and get to the <strong>2048 tile!</strong></p>
-      <a class="restart-button">New Game</a>
+      <div class="game-actions">
+        <a class="undo-button undo-disabled">Undo</a>
+        <a class="restart-button">New Game</a>
+      </div>
     </div>
 
     <div class="game-container">
@@ -109,6 +112,10 @@
     <p style="text-align:center; font-size: 14px; color: #bbada0;">
       <strong>🎮 HANAZAR GAMES 🎮</strong> — Crafting timeless digital experiences.
     </p>
+    <div class="settings-bar">
+      <a class="theme-toggle" id="theme-toggle" title="Toggle theme">🌙 Theme</a>
+      <a class="sound-toggle" id="sound-toggle" title="Toggle sound">🔊 Sound</a>
+    </div>
   </div>
 
   <script src="js/bind_polyfill.js"></script>
@@ -192,6 +199,65 @@
       }
 
       requestAnimationFrame(updateProgress);
+    })();
+  </script>
+
+  <script>
+    (function() {
+      // Theme toggle
+      var themeToggle = document.getElementById('theme-toggle');
+      var isDark = true; // default dark
+      try {
+        var saved = localStorage.getItem('hanazar_theme');
+        if (saved === 'light') isDark = false;
+      } catch(e) {}
+
+      function applyTheme() {
+        if (isDark) {
+          document.body.classList.remove('light-theme');
+          document.body.classList.add('dark-theme');
+          themeToggle.textContent = '🌙 Theme';
+        } else {
+          document.body.classList.remove('dark-theme');
+          document.body.classList.add('light-theme');
+          themeToggle.textContent = '☀️ Theme';
+        }
+        try {
+          localStorage.setItem('hanazar_theme', isDark ? 'dark' : 'light');
+        } catch(e) {}
+      }
+
+      themeToggle.addEventListener('click', function() {
+        isDark = !isDark;
+        applyTheme();
+      });
+
+      // Sound toggle
+      var soundToggle = document.getElementById('sound-toggle');
+      var soundOn = true;
+      try {
+        soundOn = localStorage.getItem('hanazar_muted') !== 'true';
+      } catch(e) {}
+
+      function updateSoundIcon() {
+        soundToggle.textContent = soundOn ? '🔊 Sound' : '🔇 Mute';
+      }
+
+      soundToggle.addEventListener('click', function() {
+        if (window.gameAudioManager) {
+          soundOn = !window.gameAudioManager.toggleMute();
+        } else {
+          soundOn = !soundOn;
+          try {
+            localStorage.setItem('hanazar_muted', soundOn ? 'false' : 'true');
+          } catch(e) {}
+        }
+        updateSoundIcon();
+      });
+
+      // Initialize
+      applyTheme();
+      updateSoundIcon();
     })();
   </script>
 </body>
