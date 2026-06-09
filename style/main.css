@@ -784,6 +784,37 @@ hr {
 .undo-button:hover {
   background: #8f7a66;
 }
+
+.ai-toggle {
+  display: inline-block;
+  background: #5a4a3a;
+  border-radius: 3px;
+  padding: 0 16px;
+  text-decoration: none;
+  color: #f9f6f2;
+  height: 40px;
+  line-height: 42px;
+  text-align: center;
+  cursor: pointer;
+  user-select: none;
+  transition: background 0.15s ease, opacity 0.15s ease;
+}
+.ai-toggle:hover {
+  background: #7a6a5a;
+}
+.ai-toggle.ai-active {
+  background: #e74c3c;
+  animation: ai-pulse 1.5s ease-in-out infinite;
+}
+.ai-toggle.ai-active:hover {
+  background: #c0392b;
+}
+
+@keyframes ai-pulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(231, 76, 60, 0.4); }
+  50% { box-shadow: 0 0 0 8px rgba(231, 76, 60, 0); }
+}
+
 .undo-button.undo-disabled {
   background: #4a4a5a;
   color: rgba(249, 246, 242, 0.4);
@@ -820,7 +851,33 @@ hr {
   transform: translateY(0);
 }
 
+.shortcuts-hint {
+  text-align: center;
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.3);
+  margin-top: 12px;
+  letter-spacing: 0.5px;
+}
+.shortcuts-hint span {
+  display: inline-block;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 4px;
+  padding: 2px 6px;
+  font-family: monospace;
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.5);
+  margin: 0 2px;
+}
+
 @media screen and (max-width: 520px) {
+  .shortcuts-hint {
+    font-size: 10px;
+    margin-top: 8px;
+  }
+  .shortcuts-hint span {
+    font-size: 10px;
+    padding: 1px 4px;
+  }
   .game-actions {
     float: none;
     width: 100%;
@@ -1335,6 +1392,39 @@ body.game-revealed .container {
   text-align: center;
   color: #eee4da;
   content: "Best Mv";
+}
+
+/* Milestone popup celebration */
+.milestone-popup {
+  position: absolute;
+  z-index: 60;
+  pointer-events: none;
+  transform: translate(-50%, 0);
+  font-size: 18px;
+  font-weight: 900;
+  color: #ffbe0b;
+  text-shadow: 0 0 10px rgba(255, 190, 11, 0.8), 0 0 30px rgba(255, 0, 110, 0.5);
+  animation: milestone-float 1.2s ease-out forwards;
+  white-space: nowrap;
+}
+
+@keyframes milestone-float {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, 10px) scale(0.5);
+  }
+  20% {
+    opacity: 1;
+    transform: translate(-50%, -10px) scale(1.2);
+  }
+  60% {
+    opacity: 1;
+    transform: translate(-50%, -40px) scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(-50%, -70px) scale(0.8);
+  }
 }
 
 /* Merge particle explosion */

@@ -18,6 +18,10 @@ function GameManager(size, InputManager, Actuator, StorageManager) {
 
   // Expose audio manager globally for html_actuator
   window.gameAudioManager = this.audioManager;
+
+  // Create AI player
+  this.aiPlayer = new AIPlayer(this);
+  window.gameAIPlayer = this.aiPlayer;
 }
 
 // Save current state for undo
@@ -60,12 +64,14 @@ GameManager.prototype.undo = function () {
 
 // Restart the game
 GameManager.prototype.restart = function () {
+  if (this.aiPlayer) this.aiPlayer.stop();
   this.storageManager.clearGameState();
   this.actuator.continueGame(); // Clear the game won/lost message
   this.moveCount = 0;
   this.startTime = Date.now();
   this.setup();
   if (this.audioManager) this.audioManager.playClick();
+  if (this.aiPlayer) this.aiPlayer.updateButton(false);
 };
 
 // Keep playing after winning (allows going over 2048)

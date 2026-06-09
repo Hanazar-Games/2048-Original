@@ -100,6 +100,40 @@ HTMLActuator.prototype.addTile = function (tile) {
 
   // Put the tile on the board
   this.tileContainer.appendChild(wrapper);
+
+  // Milestone celebration for high-value tiles
+  if (tile.value >= 128) {
+    this.spawnMilestonePopup(tile);
+  }
+};
+
+HTMLActuator.prototype.spawnMilestonePopup = function (tile) {
+  var gameContainer = document.querySelector(".game-container");
+  if (!gameContainer) return;
+
+  var cells = document.querySelectorAll(".grid-cell");
+  var tileSize = 107;
+  var gap = 15;
+  if (cells.length >= 2) {
+    var r1 = cells[0].getBoundingClientRect();
+    var r2 = cells[1].getBoundingClientRect();
+    tileSize = r1.width;
+    gap = r2.left - r1.right;
+  }
+
+  var x = gap + tile.x * (tileSize + gap) + tileSize / 2;
+  var y = gap + tile.y * (tileSize + gap);
+
+  var popup = document.createElement("div");
+  popup.className = "milestone-popup";
+  popup.textContent = tile.value + "!";
+  popup.style.left = x + "px";
+  popup.style.top = y + "px";
+
+  gameContainer.appendChild(popup);
+  setTimeout(function () {
+    if (popup.parentNode) popup.parentNode.removeChild(popup);
+  }, 1200);
 };
 
 HTMLActuator.prototype.applyClasses = function (element, classes) {

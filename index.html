@@ -119,6 +119,9 @@
       <a class="sound-toggle" id="sound-toggle" title="Toggle sound">🔊 Sound</a>
       <a class="share-button" id="share-button" title="Copy score to clipboard">📋 Share</a>
     </div>
+    <div class="shortcuts-hint">
+      <span>←↑↓→</span> Move &nbsp;|&nbsp; <span>Z</span> Undo &nbsp;|&nbsp; <span>R</span> Restart &nbsp;|&nbsp; <span>A</span> AI Mode &nbsp;|&nbsp; <span>N</span> New Game
+    </div>
   </div>
 
   <script src="js/bind_polyfill.js"></script>
@@ -130,6 +133,7 @@
   <script src="js/tile.js"></script>
   <script src="js/local_storage_manager.js"></script>
   <script src="js/audio_manager.js"></script>
+  <script src="js/ai_player.js"></script>
   <script src="js/game_manager.js"></script>
   <script src="js/application.js"></script>
 
@@ -290,6 +294,17 @@
           setTimeout(function() { shareBtn.textContent = '📋 Share'; }, 1500);
         }
       });
+
+      // AI toggle button
+      var aiBtn = document.querySelector('.ai-toggle');
+      if (aiBtn) {
+        aiBtn.addEventListener('click', function() {
+          if (window.gameAIPlayer) {
+            var running = window.gameAIPlayer.toggle();
+            window.gameAIPlayer.updateButton(running);
+          }
+        });
+      }
 
       // Initialize
       applyTheme();

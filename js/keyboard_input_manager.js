@@ -71,6 +71,14 @@ KeyboardInputManager.prototype.listen = function () {
     if (!modifiers && event.which === 90) {
       self.undo.call(self, event);
     }
+
+    // A key toggles AI auto-play
+    if (!modifiers && event.which === 65) {
+      if (window.gameAIPlayer) {
+        var running = window.gameAIPlayer.toggle();
+        window.gameAIPlayer.updateButton(running);
+      }
+    }
   });
 
   // Respond to button presses
