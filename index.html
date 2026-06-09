@@ -118,6 +118,15 @@
       <a class="theme-toggle" id="theme-toggle" title="Toggle theme">🌙 Theme</a>
       <a class="sound-toggle" id="sound-toggle" title="Toggle sound">🔊 Sound</a>
       <a class="share-button" id="share-button" title="Copy score to clipboard">📋 Share</a>
+      <a class="achievements-toggle" id="achievements-toggle" title="View achievements">🏅 Achievements</a>
+    </div>
+    <div class="game-stats"></div>
+    <div class="achievements-panel" id="achievements-panel">
+      <div class="achievements-header">
+        <span class="achievements-title">🏅 Achievements</span>
+        <a class="achievements-close" id="achievements-close">✕</a>
+      </div>
+      <div class="achievements-list" id="achievements-list"></div>
     </div>
     <div class="shortcuts-hint">
       <span>←↑↓→</span> Move &nbsp;|&nbsp; <span>Z</span> Undo &nbsp;|&nbsp; <span>R</span> Restart &nbsp;|&nbsp; <span>A</span> AI Mode &nbsp;|&nbsp; <span>N</span> New Game
@@ -133,6 +142,7 @@
   <script src="js/tile.js"></script>
   <script src="js/local_storage_manager.js"></script>
   <script src="js/audio_manager.js"></script>
+  <script src="js/achievements.js"></script>
   <script src="js/ai_player.js"></script>
   <script src="js/game_manager.js"></script>
   <script src="js/application.js"></script>
@@ -304,6 +314,61 @@
             window.gameAIPlayer.updateButton(running);
           }
         });
+      }
+
+      // Achievements panel
+      var achToggle = document.getElementById('achievements-toggle');
+      var achPanel = document.getElementById('achievements-panel');
+      var achClose = document.getElementById('achievements-close');
+      var achList = document.getElementById('achievements-list');
+
+      function renderAchievements() {
+        if (!achList || !window.gameManager || !window.gameManager.achievementsManager) return;
+        var mgr = window.gameManager.achievementsManager;
+        var html = '';
+        for (var key in mgr.achievements) {
+          var a = mgr.achievements[key];
+          var cls = a.unlocked ? 'unlocked' : '';
+          var status = a.unlocked ? '✓' : '○';
+          html += '<div class="achievement-item ' + cls + '">' +
+                  '<div class="achievement-item-icon">' + a.icon + '</div>' +
+                  '<div class="achievement-item-info">' +
+                  '<div class="achievement-item-name">' + a.name + '</div>' +
+                  '<div class="achievement-item-desc">' + a.desc + '</div>' +
+                  '</div>' +
+                  '<div class="achievement-item-status">' + status + '</div>' +
+                  '</div>';
+        }
+        var count = mgr.getUnlockedCount();
+        var total = Object.keys(mgr.achievements).length;
+        html = '<div style="text-align:center; font-size:12px; color:rgba(255,255,255,0.4); margin-bottom:12px;">' +
+               'Unlocked: ' + count + ' / ' + total + '</div>' + html;
+        achList.innerHTML = html;
+      }
+
+      function openAchievements() {
+        renderAchievements();
+        if (achPanel) achPanel.classList.add('panel-open');
+        var overlay = document.getElementById('achievements-overlay');
+        if (overlay) overlay.classList.add('overlay-open');
+      }
+
+      function closeAchievements() {
+        if (achPanel) achPanel.classList.remove('panel-open');
+        var overlay = document.getElementById('achievements-overlay');
+        if (overlay) overlay.classList.remove('overlay-open');
+      }
+
+      if (achToggle) achToggle.addEventListener('click', openAchievements);
+      if (achClose) achClose.addEventListener('click', closeAchievements);
+
+      // Create overlay if not exists
+      if (!document.getElementById('achievements-overlay')) {
+        var overlay = document.createElement('div');
+        overlay.id = 'achievements-overlay';
+        overlay.className = 'achievements-overlay';
+        overlay.addEventListener('click', closeAchievements);
+        document.body.appendChild(overlay);
       }
 
       // Initialize

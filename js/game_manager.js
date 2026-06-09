@@ -3,11 +3,16 @@ function GameManager(size, InputManager, Actuator, StorageManager) {
   this.inputManager   = new InputManager;
   this.storageManager = new StorageManager;
   this.actuator       = new Actuator;
-  this.audioManager   = new AudioManager();
+  this.audioManager        = new AudioManager();
+  this.achievementsManager = new AchievementsManager(this.storageManager);
 
   this.startTiles     = 2;
   this.moveCount      = 0;
   this.startTime      = Date.now();
+  this.mergeCount     = 0;
+  this.maxTile        = 0;
+  this.maxMergeValue  = 0;
+  this.undoUsed       = false;
 
   this.inputManager.on("move", this.move.bind(this));
   this.inputManager.on("restart", this.restart.bind(this));
@@ -39,6 +44,7 @@ GameManager.prototype.saveUndoState = function () {
 // Undo last move
 GameManager.prototype.undo = function () {
   if (!this.undoState || this.over) return;
+  this.undoUsed = true;
 
   this.grid        = new Grid(this.undoState.grid.size,
                               this.undoState.grid.cells);
@@ -49,14 +55,21 @@ GameManager.prototype.undo = function () {
   this.moveCount   = this.undoState.moveCount;
   this.undoState   = null;
 
+  var bestMoves = this.storageManager.getBestMoves();
+
   this.actuator.actuate(this.grid, {
-    score:      this.score,
-    over:       this.over,
-    won:        this.won,
-    bestScore:  this.storageManager.getBestScore(),
-    terminated: this.isGameTerminated(),
-    moveCount:  this.moveCount,
-    undoAvailable: false
+    score:         this.score,
+    over:          this.over,
+    won:           this.won,
+    bestScore:     this.storageManager.getBestScore(),
+    bestMoves:     bestMoves || "—",
+    terminated:    this.isGameTerminated(),
+    moveCount:     this.moveCount,
+    elapsedTime:   this.getElapsedTime(),
+    undoAvailable: false,
+    maxTile:       this.maxTile,
+    mergeCount:    this.mergeCount,
+    maxMergeValue: this.maxMergeValue
   });
 
   if (this.audioManager) this.audioManager.playClick();
@@ -69,6 +82,10 @@ GameManager.prototype.restart = function () {
   this.actuator.continueGame(); // Clear the game won/lost message
   this.moveCount = 0;
   this.startTime = Date.now();
+  this.mergeCount = 0;
+  this.maxTile = 0;
+  this.maxMergeValue = 0;
+  this.undoUsed = false;
   this.setup();
   if (this.audioManager) this.audioManager.playClick();
   if (this.aiPlayer) this.aiPlayer.updateButton(false);
@@ -106,6 +123,10 @@ GameManager.prototype.setup = function () {
     this.keepPlaying = false;
     this.moveCount   = 0;
     this.startTime   = Date.now();
+    this.mergeCount  = 0;
+    this.maxTile     = 0;
+    this.maxMergeValue = 0;
+    this.undoUsed    = false;
 
     // Add the initial tiles
     this.addStartTiles();
@@ -154,6 +175,12 @@ GameManager.prototype.actuate = function () {
     }
   }
 
+  // Check end-game achievements
+  var endAch = [];
+  if (this.achievementsManager) {
+    endAch = this.achievementsManager.checkGameEnd(this.won, this.moveCount, this.undoUsed);
+  }
+
   this.actuator.actuate(this.grid, {
     score:         this.score,
     over:          this.over,
@@ -163,7 +190,11 @@ GameManager.prototype.actuate = function () {
     terminated:    this.isGameTerminated(),
     moveCount:     this.moveCount,
     elapsedTime:   this.getElapsedTime(),
-    undoAvailable: !!this.undoState && !this.over
+    undoAvailable: !!this.undoState && !this.over,
+    maxTile:       this.maxTile,
+    mergeCount:    this.mergeCount,
+    maxMergeValue: this.maxMergeValue,
+    newAchievements: endAch
   });
 
 };
@@ -242,6 +273,19 @@ GameManager.prototype.move = function (direction) {
 
           // Play merge sound
           if (self.audioManager) self.audioManager.playMerge(merged.value);
+
+          // Track stats and achievements
+          self.mergeCount++;
+          if (merged.value > self.maxMergeValue) self.maxMergeValue = merged.value;
+          if (merged.value > self.maxTile) self.maxTile = merged.value;
+
+          // Check merge achievements
+          if (self.achievementsManager) {
+            var newAch = self.achievementsManager.checkMerge(merged.value);
+            if (newAch.length > 0 && self.actuator.showAchievements) {
+              self.actuator.showAchievements(newAch);
+            }
+          }
 
           // The mighty 2048 tile
           if (merged.value === 2048) self.won = true;

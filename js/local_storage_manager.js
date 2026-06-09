@@ -71,3 +71,12 @@ LocalStorageManager.prototype.setGameState = function (gameState) {
 LocalStorageManager.prototype.clearGameState = function () {
   this.storage.removeItem(this.gameStateKey);
 };
+
+LocalStorageManager.prototype.getAchievements = function () {
+  var json = this.storage.getItem("hanazar_achievements");
+  return json ? JSON.parse(json) : null;
+};
+
+LocalStorageManager.prototype.setAchievements = function (data) {
+  this.storage.setItem("hanazar_achievements", JSON.stringify(data));
+};

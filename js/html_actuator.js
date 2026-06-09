@@ -7,6 +7,8 @@ function HTMLActuator() {
   this.timerContainer   = document.querySelector(".timer-container");
   this.bestMovesContainer = document.querySelector(".best-moves-container");
   this.undoButton       = document.querySelector(".undo-button");
+  this.statsContainer   = document.querySelector(".game-stats");
+  this.achievementsPanel = document.querySelector(".achievements-panel");
 
   this.score = 0;
 }
@@ -38,6 +40,11 @@ HTMLActuator.prototype.actuate = function (grid, metadata) {
       } else if (metadata.won) {
         self.message(true); // You win!
       }
+      self.showGameStats(metadata);
+    }
+
+    if (metadata.newAchievements && metadata.newAchievements.length > 0) {
+      self.showAchievements(metadata.newAchievements);
     }
 
   });
@@ -46,6 +53,7 @@ HTMLActuator.prototype.actuate = function (grid, metadata) {
 // Continues the game (both restart and keep playing)
 HTMLActuator.prototype.continueGame = function () {
   this.clearMessage();
+  this.hideGameStats();
 };
 
 HTMLActuator.prototype.clearContainer = function (container) {
@@ -194,6 +202,64 @@ HTMLActuator.prototype.updateUndoButton = function (available) {
   } else {
     this.undoButton.classList.add("undo-disabled");
     this.undoButton.textContent = "Undo";
+  }
+};
+
+HTMLActuator.prototype.showAchievements = function (achievements) {
+  var self = this;
+  achievements.forEach(function (ach, index) {
+    setTimeout(function () {
+      var popup = document.createElement("div");
+      popup.className = "achievement-popup";
+      popup.innerHTML = '<div class="achievement-icon">' + ach.icon + '</div>' +
+                        '<div class="achievement-text">' +
+                        '<div class="achievement-title">Achievement Unlocked!</div>' +
+                        '<div class="achievement-name">' + ach.name + '</div>' +
+                        '<div class="achievement-desc">' + ach.desc + '</div>' +
+                        '</div>';
+      document.body.appendChild(popup);
+
+      // Play a special sound
+      if (window.gameAudioManager) {
+        window.gameAudioManager.playTone(523, 0.15, "sine", 0.15);
+        setTimeout(function () {
+          window.gameAudioManager.playTone(659, 0.15, "sine", 0.15);
+        }, 120);
+        setTimeout(function () {
+          window.gameAudioManager.playTone(784, 0.2, "sine", 0.15);
+        }, 240);
+      }
+
+      setTimeout(function () {
+        if (popup.parentNode) popup.parentNode.removeChild(popup);
+      }, 3000);
+    }, index * 400);
+  });
+};
+
+HTMLActuator.prototype.showGameStats = function (metadata) {
+  if (!this.statsContainer) return;
+  var maxTile = metadata.maxTile || 0;
+  var mergeCount = metadata.mergeCount || 0;
+  var maxMerge = metadata.maxMergeValue || 0;
+  var score = metadata.score || 0;
+  var moves = metadata.moveCount || 0;
+  var efficiency = moves > 0 ? Math.floor(score / moves) : 0;
+
+  this.statsContainer.innerHTML =
+    '<div class="stats-title">📊 Game Stats</div>' +
+    '<div class="stats-grid">' +
+    '<div class="stat-item"><span class="stat-val">' + maxTile + '</span><span class="stat-label">Max Tile</span></div>' +
+    '<div class="stat-item"><span class="stat-val">' + mergeCount + '</span><span class="stat-label">Merges</span></div>' +
+    '<div class="stat-item"><span class="stat-val">' + maxMerge + '</span><span class="stat-label">Best Merge</span></div>' +
+    '<div class="stat-item"><span class="stat-val">' + efficiency + '</span><span class="stat-label">Pts/Move</span></div>' +
+    '</div>';
+  this.statsContainer.classList.add("stats-visible");
+};
+
+HTMLActuator.prototype.hideGameStats = function () {
+  if (this.statsContainer) {
+    this.statsContainer.classList.remove("stats-visible");
   }
 };
 
