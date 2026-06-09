@@ -91,6 +91,9 @@ KeyboardInputManager.prototype.listen = function () {
   var touchStartClientX, touchStartClientY;
   var gameContainer = document.getElementsByClassName("game-container")[0];
 
+  var touchStartTime = 0;
+  var swipeThreshold = 35; // minimum px to register a swipe
+
   gameContainer.addEventListener(this.eventTouchstart, function (event) {
     if ((!window.navigator.msPointerEnabled && event.touches.length > 1) ||
         event.targetTouches.length > 1) {
@@ -104,6 +107,7 @@ KeyboardInputManager.prototype.listen = function () {
       touchStartClientX = event.touches[0].clientX;
       touchStartClientY = event.touches[0].clientY;
     }
+    touchStartTime = Date.now();
 
     event.preventDefault();
   });
@@ -117,6 +121,10 @@ KeyboardInputManager.prototype.listen = function () {
         event.targetTouches.length > 0) {
       return; // Ignore if still touching with one or more fingers
     }
+
+    // Ignore long presses (tap-hold)
+    var elapsed = Date.now() - touchStartTime;
+    if (elapsed > 400) return;
 
     var touchEndClientX, touchEndClientY;
 
@@ -134,7 +142,11 @@ KeyboardInputManager.prototype.listen = function () {
     var dy = touchEndClientY - touchStartClientY;
     var absDy = Math.abs(dy);
 
-    if (Math.max(absDx, absDy) > 10) {
+    if (Math.max(absDx, absDy) > swipeThreshold) {
+      // Haptic feedback if supported
+      if (window.navigator.vibrate) {
+        window.navigator.vibrate(15);
+      }
       // (right : left) : (down : up)
       self.emit("move", absDx > absDy ? (dx > 0 ? 1 : 3) : (dy > 0 ? 2 : 0));
     }
