@@ -176,7 +176,28 @@ HTMLActuator.prototype.updateScore = function (score) {
     addition.textContent = "+" + difference;
 
     this.scoreContainer.appendChild(addition);
+
+    // Edge flash on big milestones
+    if (difference >= 512) {
+      this.triggerEdgeFlash();
+    }
   }
+};
+
+HTMLActuator.prototype.triggerEdgeFlash = function () {
+  var flash = document.getElementById('edge-flash');
+  if (!flash) {
+    flash = document.createElement('div');
+    flash.id = 'edge-flash';
+    flash.className = 'edge-flash';
+    document.body.appendChild(flash);
+  }
+  flash.classList.remove('flash-active');
+  void flash.offsetWidth; // force reflow
+  flash.classList.add('flash-active');
+  setTimeout(function () {
+    flash.classList.remove('flash-active');
+  }, 600);
 };
 
 HTMLActuator.prototype.updateBestScore = function (bestScore) {

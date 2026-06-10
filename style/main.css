@@ -1572,6 +1572,127 @@ body::before {
   100% { background-position: 60px 60px; }
 }
 
+/* First-time guide modal */
+.guide-modal {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 10002;
+  background: rgba(0, 0, 0, 0.75);
+  align-items: center;
+  justify-content: center;
+}
+.guide-modal.guide-visible {
+  display: flex;
+  animation: guide-fade-in 0.4s ease forwards;
+}
+
+@keyframes guide-fade-in {
+  0% { opacity: 0; }
+  100% { opacity: 1; }
+}
+
+.guide-content {
+  background: linear-gradient(135deg, #1a1a2e 0%, #2d2d44 100%);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 20px;
+  padding: 36px 32px;
+  max-width: 420px;
+  width: 90%;
+  text-align: center;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+  animation: guide-scale-in 0.4s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+@keyframes guide-scale-in {
+  0% { opacity: 0; transform: scale(0.85); }
+  100% { opacity: 1; transform: scale(1); }
+}
+
+.guide-icon {
+  font-size: 56px;
+  line-height: 1;
+  margin-bottom: 12px;
+}
+
+.guide-title {
+  font-size: 24px;
+  font-weight: 900;
+  color: #ffffff;
+  margin: 0 0 16px 0;
+}
+
+.guide-text {
+  font-size: 15px;
+  color: rgba(255, 255, 255, 0.7);
+  line-height: 1.7;
+  margin: 0 0 20px 0;
+}
+
+.guide-shortcuts {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
+  margin-bottom: 24px;
+}
+.guide-shortcuts span {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.5);
+}
+.guide-shortcuts kbd {
+  display: inline-block;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 4px;
+  padding: 3px 8px;
+  font-family: monospace;
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.7);
+  margin-right: 4px;
+}
+
+.guide-close {
+  display: inline-block;
+  background: #ffbe0b;
+  color: #1a1a2e;
+  font-size: 16px;
+  font-weight: 900;
+  padding: 12px 36px;
+  border-radius: 30px;
+  cursor: pointer;
+  user-select: none;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  text-decoration: none;
+}
+.guide-close:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(255, 190, 11, 0.3);
+}
+
+/* Score milestone edge flash */
+.edge-flash {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 9998;
+  pointer-events: none;
+  box-shadow: inset 0 0 0 0 rgba(255, 190, 11, 0);
+}
+.edge-flash.flash-active {
+  animation: edge-flash-pulse 0.6s ease-out forwards;
+}
+
+@keyframes edge-flash-pulse {
+  0% { box-shadow: inset 0 0 0 0 rgba(255, 190, 11, 0); }
+  30% { box-shadow: inset 0 0 60px 10px rgba(255, 190, 11, 0.4); }
+  100% { box-shadow: inset 0 0 0 0 rgba(255, 190, 11, 0); }
+}
+
 /* Achievement unlock popup */
 .achievement-popup {
   position: fixed;

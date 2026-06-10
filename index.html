@@ -19,6 +19,26 @@
   <meta name="viewport" content="width=device-width, target-densitydpi=160dpi, initial-scale=1.0, maximum-scale=1, user-scalable=no, minimal-ui">
 </head>
 <body>
+  <!-- First-time Guide -->
+  <div id="guide-modal" class="guide-modal">
+    <div class="guide-content">
+      <div class="guide-icon">🎮</div>
+      <h2 class="guide-title">Welcome to Hanazar 2048</h2>
+      <p class="guide-text">
+        Swipe or use <strong>arrow keys</strong> to move tiles.<br>
+        When two tiles with the same number touch, they <strong>merge into one!</strong><br>
+        Get to the <strong>2048 tile</strong> to win.
+      </p>
+      <div class="guide-shortcuts">
+        <span><kbd>←↑↓→</kbd> Move</span>
+        <span><kbd>Z</kbd> Undo</span>
+        <span><kbd>R</kbd> Restart</span>
+        <span><kbd>A</kbd> AI Mode</span>
+      </div>
+      <a class="guide-close" id="guide-close">Got it!</a>
+    </div>
+  </div>
+
   <!-- Splash Screen -->
   <div id="splash-screen">
     <div class="splash-particles">
@@ -424,6 +444,25 @@
           document.body.appendChild(ov);
         }
       });
+
+      // First-time guide
+      var guideModal = document.getElementById('guide-modal');
+      var guideClose = document.getElementById('guide-close');
+      var guideSeen = false;
+      try { guideSeen = localStorage.getItem('hanazar_guide_seen') === 'true'; } catch(e) {}
+
+      if (guideModal && !guideSeen) {
+        setTimeout(function() {
+          guideModal.classList.add('guide-visible');
+        }, 3500); // show after splash screen
+      }
+
+      if (guideClose && guideModal) {
+        guideClose.addEventListener('click', function() {
+          guideModal.classList.remove('guide-visible');
+          try { localStorage.setItem('hanazar_guide_seen', 'true'); } catch(e) {}
+        });
+      }
 
       // Initialize
       applyTheme();
