@@ -364,6 +364,28 @@ HTMLActuator.prototype.message = function (won) {
   this.messageContainer.classList.add(type);
   this.messageContainer.getElementsByTagName("p")[0].textContent = message;
 
+  // Add random quote
+  var quotes = [
+    "Every master was once a beginner.",
+    "The only way to do great work is to love what you do.",
+    "Success is the sum of small efforts, repeated day in and day out.",
+    "Don't watch the clock; do what it does. Keep going.",
+    "The harder you work, the luckier you get.",
+    "It's not about being the best. It's about being better than yesterday.",
+    "Fall seven times, stand up eight.",
+    "The journey of a thousand miles begins with one step.",
+    "Believe you can and you're halfway there.",
+    "Your only limit is your mind."
+  ];
+  var quote = quotes[Math.floor(Math.random() * quotes.length)];
+  var quoteEl = document.createElement("div");
+  quoteEl.className = "game-over-quote";
+  quoteEl.textContent = '"' + quote + '"';
+  this.messageContainer.appendChild(quoteEl);
+  setTimeout(function () {
+    if (quoteEl.parentNode) quoteEl.parentNode.removeChild(quoteEl);
+  }, 5000);
+
   // Play win/lose sound
   if (window.gameAudioManager) {
     if (won) window.gameAudioManager.playWin();

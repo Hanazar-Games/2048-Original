@@ -1624,6 +1624,53 @@ body::before {
   100% { background-position: 60px 60px; }
 }
 
+/* Konami code popup */
+.konami-popup {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 10003;
+  background: linear-gradient(135deg, #1a1a2e 0%, #2d2d44 100%);
+  border: 2px solid #ffbe0b;
+  border-radius: 16px;
+  padding: 24px 36px;
+  text-align: center;
+  box-shadow: 0 0 60px rgba(255, 190, 11, 0.3);
+  animation: konami-pop 0.5s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+.konami-popup div:first-child {
+  font-size: 22px;
+  font-weight: 900;
+  color: #ffbe0b;
+  margin-bottom: 4px;
+}
+.konami-popup div:last-child {
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+@keyframes konami-pop {
+  0% { opacity: 0; transform: translate(-50%, -50%) scale(0.5); }
+  100% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+}
+
+/* Game over quote */
+.game-over-quote {
+  font-size: 14px;
+  font-style: italic;
+  color: rgba(255, 255, 255, 0.5);
+  margin-top: 12px;
+  padding: 0 20px;
+  line-height: 1.5;
+  animation: quote-fade-in 1s ease forwards;
+}
+
+@keyframes quote-fade-in {
+  0% { opacity: 0; transform: translateY(10px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
 /* First-time guide modal */
 .guide-modal {
   display: none;

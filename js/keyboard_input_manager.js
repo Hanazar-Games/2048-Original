@@ -1,5 +1,7 @@
 function KeyboardInputManager() {
   this.events = {};
+  this.konamiCode = [38, 38, 40, 40, 37, 39, 37, 39, 66, 65];
+  this.konamiIndex = 0;
 
   if (window.navigator.msPointerEnabled) {
     //Internet Explorer 10 style
@@ -78,6 +80,17 @@ KeyboardInputManager.prototype.listen = function () {
         var running = window.gameAIPlayer.toggle();
         window.gameAIPlayer.updateButton(running);
       }
+    }
+
+    // Konami code detection (↑↑↓↓←→←→BA)
+    if (event.which === self.konamiCode[self.konamiIndex]) {
+      self.konamiIndex++;
+      if (self.konamiIndex >= self.konamiCode.length) {
+        self.konamiIndex = 0;
+        self.emit("konami");
+      }
+    } else {
+      self.konamiIndex = 0;
     }
   });
 

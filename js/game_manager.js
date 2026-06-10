@@ -20,6 +20,7 @@ function GameManager(size, InputManager, Actuator, StorageManager) {
   this.inputManager.on("restart", this.restart.bind(this));
   this.inputManager.on("keepPlaying", this.keepPlaying.bind(this));
   this.inputManager.on("undo", this.undo.bind(this));
+  this.inputManager.on("konami", this.konami.bind(this));
 
   this.setup();
 
@@ -109,6 +110,34 @@ GameManager.prototype.setGridSize = function (size) {
   this.setup();
   if (this.audioManager) this.audioManager.playClick();
   if (this.aiPlayer) this.aiPlayer.updateButton(false);
+};
+
+GameManager.prototype.getElapsedTime = function () {
+  if (!this.startTime) return 0;
+  return Math.floor((Date.now() - this.startTime) / 1000);
+};
+
+// Konami code easter egg
+GameManager.prototype.konami = function () {
+  var tiles = document.querySelectorAll('.tile-inner');
+  tiles.forEach(function (t) {
+    t.style.animation = 'rainbow-shimmer 1s linear infinite';
+  });
+
+  if (this.audioManager) {
+    this.audioManager.playTone(523, 0.1, "sine", 0.15);
+    setTimeout(function () { this.audioManager.playTone(659, 0.1, "sine", 0.15); }.bind(this), 100);
+    setTimeout(function () { this.audioManager.playTone(784, 0.1, "sine", 0.15); }.bind(this), 200);
+    setTimeout(function () { this.audioManager.playTone(1047, 0.2, "sine", 0.2); }.bind(this), 300);
+  }
+
+  var popup = document.createElement('div');
+  popup.className = 'konami-popup';
+  popup.innerHTML = '<div>🎮 KONAMI CODE ACTIVATED!</div><div>Rainbow Mode ON</div>';
+  document.body.appendChild(popup);
+  setTimeout(function () {
+    if (popup.parentNode) popup.parentNode.removeChild(popup);
+  }, 2500);
 };
 
 // Keep playing after winning (allows going over 2048)
