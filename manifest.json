@@ -1,0 +1,31 @@
+{
+  "name": "Hanazar 2048",
+  "short_name": "2048",
+  "description": "2048 Original by Hanazar Games — A timeless puzzle experience",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#1a1a2e",
+  "theme_color": "#1a1a2e",
+  "icons": [
+    {
+      "src": "meta/apple-touch-icon.png",
+      "sizes": "180x180",
+      "type": "image/png"
+    },
+    {
+      "src": "favicon.ico",
+      "sizes": "64x64 32x32 24x24 16x16",
+      "type": "image/x-icon"
+    }
+  ],
+  "categories": ["games", "puzzle"],
+  "screenshots": [
+    {
+      "src": "meta/apple-touch-startup-image-640x1096.png",
+      "sizes": "640x1096",
+      "type": "image/png",
+      "form_factor": "narrow"
+    }
+  ]
+}
