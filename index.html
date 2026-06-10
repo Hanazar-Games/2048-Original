@@ -149,6 +149,7 @@
     </div>
     <div class="settings-bar">
       <a class="theme-toggle" id="theme-toggle" title="Toggle theme">🌙 Theme</a>
+      <a class="emoji-toggle" id="emoji-toggle" title="Toggle emoji tiles">😀 Emoji</a>
       <a class="music-toggle" id="music-toggle" title="Toggle ambient music">🎵 Music</a>
       <a class="sound-toggle" id="sound-toggle" title="Toggle sound">🔊 Sound</a>
       <a class="share-button" id="share-button" title="Copy score to clipboard">📋 Share</a>
@@ -331,6 +332,42 @@
           } catch(e) {}
         }
         updateSoundIcon();
+      });
+
+      // Emoji toggle
+      var emojiToggle = document.getElementById('emoji-toggle');
+      var emojiOn = false;
+      try {
+        emojiOn = localStorage.getItem('hanazar_emoji') === 'true';
+      } catch(e) {}
+
+      function updateEmojiIcon() {
+        emojiToggle.textContent = emojiOn ? '😀 Emoji' : '🔢 Emoji';
+        if (emojiOn) {
+          emojiToggle.classList.add('emoji-active');
+        } else {
+          emojiToggle.classList.remove('emoji-active');
+        }
+      }
+
+      emojiToggle.addEventListener('click', function() {
+        emojiOn = !emojiOn;
+        try {
+          localStorage.setItem('hanazar_emoji', emojiOn ? 'true' : 'false');
+        } catch(e) {}
+        updateEmojiIcon();
+        // Refresh all visible tiles
+        if (window.gameManager) {
+          window.gameManager.actuator.actuate(window.gameManager.grid, {
+            score: window.gameManager.score,
+            over: window.gameManager.over,
+            won: window.gameManager.won,
+            bestScore: window.gameManager.storageManager.getBestScore(),
+            terminated: window.gameManager.isGameTerminated(),
+            moveCount: window.gameManager.moveCount,
+            elapsedTime: window.gameManager.getElapsedTime()
+          });
+        }
       });
 
       // Music toggle
@@ -603,6 +640,7 @@
       applyTheme();
       updateSoundIcon();
       updateMusicIcon();
+      updateEmojiIcon();
     })();
   </script>
 </body>

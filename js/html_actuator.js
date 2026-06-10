@@ -15,6 +15,13 @@ function HTMLActuator() {
 
   this.score = 0;
 
+  // Emoji mode mapping
+  this.emojiMap = {
+    2: "🥚", 4: "🐣", 8: "🐥", 16: "🐓", 32: "🦅",
+    64: "🐉", 128: "👑", 256: "💎", 512: "🔥",
+    1024: "⚡", 2048: "🌟"
+  };
+
   // Expose for external UI controls
   window.htmlActuatorInstance = this;
 }
@@ -99,7 +106,9 @@ HTMLActuator.prototype.addTile = function (tile) {
   this.applyClasses(wrapper, classes);
 
   inner.classList.add("tile-inner");
-  inner.textContent = tile.value;
+  var emojiMode = false;
+  try { emojiMode = localStorage.getItem('hanazar_emoji') === 'true'; } catch(e) {}
+  inner.textContent = (emojiMode && this.emojiMap[tile.value]) ? this.emojiMap[tile.value] : tile.value;
 
   if (tile.mergedFrom) {
     this.spawnMergeParticles(tile);
@@ -196,6 +205,7 @@ HTMLActuator.prototype.updateScore = function (score) {
     // Edge flash on big milestones
     if (difference >= 512) {
       this.triggerEdgeFlash();
+      this.triggerBoardShake();
     }
   }
 };
@@ -214,6 +224,17 @@ HTMLActuator.prototype.triggerEdgeFlash = function () {
   setTimeout(function () {
     flash.classList.remove('flash-active');
   }, 600);
+};
+
+HTMLActuator.prototype.triggerBoardShake = function () {
+  var board = document.querySelector('.game-container');
+  if (!board) return;
+  board.classList.remove('board-shake');
+  void board.offsetWidth;
+  board.classList.add('board-shake');
+  setTimeout(function () {
+    board.classList.remove('board-shake');
+  }, 400);
 };
 
 HTMLActuator.prototype.updateBestScore = function (bestScore) {
