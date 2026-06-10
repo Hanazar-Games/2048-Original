@@ -1951,6 +1951,33 @@ body::before {
   transform: translateY(-1px);
 }
 
+.reset-toggle {
+  display: inline-block;
+  background: #3d3d5c;
+  border-radius: 20px;
+  padding: 6px 16px;
+  text-decoration: none;
+  color: #e0d8d0;
+  font-size: 13px;
+  font-weight: bold;
+  cursor: pointer;
+  user-select: none;
+  transition: background 0.15s ease, transform 0.1s ease;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+.reset-toggle:hover {
+  background: #e74c3c;
+  transform: translateY(-1px);
+}
+
+.version-tag {
+  text-align: center;
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.15);
+  margin-top: 16px;
+  letter-spacing: 0.5px;
+}
+
 /* Stats panel & Leaderboard panel reuse achievements-panel styles */
 .stats-panel, .leaderboard-panel {
   display: none;

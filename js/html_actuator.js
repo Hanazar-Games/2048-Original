@@ -347,6 +347,15 @@ HTMLActuator.prototype.message = function (won) {
     if (won) window.gameAudioManager.playWin();
     else window.gameAudioManager.playGameOver();
   }
+
+  // Haptic feedback on game end
+  if (window.navigator.vibrate) {
+    if (won) {
+      window.navigator.vibrate([50, 80, 50, 80, 100]);
+    } else {
+      window.navigator.vibrate([100, 50, 100]);
+    }
+  }
 };
 
 HTMLActuator.prototype.clearMessage = function () {
