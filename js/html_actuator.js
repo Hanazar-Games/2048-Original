@@ -6,6 +6,7 @@ function HTMLActuator() {
   this.movesContainer   = document.querySelector(".moves-container");
   this.timerContainer   = document.querySelector(".timer-container");
   this.bestMovesContainer = document.querySelector(".best-moves-container");
+  this.efficiencyContainer = document.querySelector(".efficiency-container");
   this.undoButton       = document.querySelector(".undo-button");
   this.statsContainer   = document.querySelector(".game-stats");
   this.achievementsPanel = document.querySelector(".achievements-panel");
@@ -37,6 +38,7 @@ HTMLActuator.prototype.actuate = function (grid, metadata) {
     self.updateMoves(metadata.moveCount);
     self.updateTimer(metadata.elapsedTime);
     self.updateBestMoves(metadata.bestMoves);
+    self.updateEfficiency(metadata.score, metadata.moveCount);
     self.updateUndoButton(metadata.undoAvailable);
 
     if (metadata.terminated) {
@@ -232,6 +234,12 @@ HTMLActuator.prototype.updateTimer = function (seconds) {
 HTMLActuator.prototype.updateBestMoves = function (bestMoves) {
   if (!this.bestMovesContainer) return;
   this.bestMovesContainer.textContent = bestMoves || "—";
+};
+
+HTMLActuator.prototype.updateEfficiency = function (score, moveCount) {
+  if (!this.efficiencyContainer) return;
+  var eff = moveCount > 0 ? Math.floor(score / moveCount) : 0;
+  this.efficiencyContainer.textContent = eff;
 };
 
 HTMLActuator.prototype.updateUndoButton = function (available) {

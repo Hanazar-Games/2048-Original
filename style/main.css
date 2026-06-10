@@ -500,12 +500,28 @@ hr {
     transform: scale(1); } }
 .tile-merged .tile-inner {
   z-index: 20;
-  -webkit-animation: pop 200ms ease 100ms;
-  -moz-animation: pop 200ms ease 100ms;
-  animation: pop 200ms ease 100ms;
+  -webkit-animation: pop 200ms ease 100ms, flip-3d 300ms ease 100ms;
+  -moz-animation: pop 200ms ease 100ms, flip-3d 300ms ease 100ms;
+  animation: pop 200ms ease 100ms, flip-3d 300ms ease 100ms;
   -webkit-animation-fill-mode: backwards;
   -moz-animation-fill-mode: backwards;
   animation-fill-mode: backwards; }
+
+@-webkit-keyframes flip-3d {
+  0% { -webkit-transform: perspective(400px) rotateY(0deg); }
+  50% { -webkit-transform: perspective(400px) rotateY(180deg) scale(1.1); }
+  100% { -webkit-transform: perspective(400px) rotateY(360deg); }
+}
+@-moz-keyframes flip-3d {
+  0% { -moz-transform: perspective(400px) rotateY(0deg); }
+  50% { -moz-transform: perspective(400px) rotateY(180deg) scale(1.1); }
+  100% { -moz-transform: perspective(400px) rotateY(360deg); }
+}
+@keyframes flip-3d {
+  0% { transform: perspective(400px) rotateY(0deg); }
+  50% { transform: perspective(400px) rotateY(180deg) scale(1.1); }
+  100% { transform: perspective(400px) rotateY(360deg); }
+}
 
 .above-game:after {
   content: "";
@@ -1333,6 +1349,36 @@ body.game-revealed .container {
   content: "Moves";
 }
 
+/* Efficiency container */
+.efficiency-container {
+  position: relative;
+  display: inline-block;
+  background: #8f7a66;
+  padding: 15px 25px;
+  font-size: 25px;
+  height: 25px;
+  line-height: 47px;
+  font-weight: bold;
+  border-radius: 3px;
+  color: white;
+  margin-top: 8px;
+  margin-left: 8px;
+  text-align: center;
+  min-width: 40px;
+}
+.efficiency-container:after {
+  position: absolute;
+  width: 100%;
+  top: 10px;
+  left: 0;
+  text-transform: uppercase;
+  font-size: 13px;
+  line-height: 13px;
+  text-align: center;
+  color: #eee4da;
+  content: "Eff";
+}
+
 /* Timer container */
 .timer-container {
   position: relative;
@@ -1473,13 +1519,19 @@ body.dark-theme .grid-cell {
 
 body.dark-theme .score-container,
 body.dark-theme .best-container,
-body.dark-theme .moves-container {
+body.dark-theme .moves-container,
+body.dark-theme .efficiency-container,
+body.dark-theme .timer-container,
+body.dark-theme .best-moves-container {
   background: #3d3d5c;
 }
 
 body.dark-theme .score-container:after,
 body.dark-theme .best-container:after,
-body.dark-theme .moves-container:after {
+body.dark-theme .moves-container:after,
+body.dark-theme .efficiency-container:after,
+body.dark-theme .timer-container:after,
+body.dark-theme .best-moves-container:after {
   color: rgba(255, 255, 255, 0.5);
 }
 
@@ -2353,7 +2405,8 @@ body::before {
 
   .moves-container,
   .timer-container,
-  .best-moves-container {
+  .best-moves-container,
+  .efficiency-container {
     margin-top: 0;
     padding: 15px 10px;
     min-width: 30px;
@@ -2363,7 +2416,8 @@ body::before {
   }
   .moves-container:after,
   .timer-container:after,
-  .best-moves-container:after {
+  .best-moves-container:after,
+  .efficiency-container:after {
     font-size: 11px;
     line-height: 11px;
     top: 8px;
