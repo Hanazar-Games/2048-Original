@@ -136,6 +136,10 @@
     <p style="text-align:center; font-size: 14px; color: #bbada0;">
       <strong>🎮 HANAZAR GAMES 🎮</strong> — Crafting timeless digital experiences.
     </p>
+    <div class="daily-challenge-bar">
+      <span class="daily-label">📅 Daily Challenge</span>
+      <span class="daily-score" id="daily-score">Best today: 0</span>
+    </div>
     <div class="settings-bar">
       <a class="theme-toggle" id="theme-toggle" title="Toggle theme">🌙 Theme</a>
       <a class="music-toggle" id="music-toggle" title="Toggle ambient music">🎵 Music</a>
@@ -144,6 +148,8 @@
       <a class="achievements-toggle" id="achievements-toggle" title="View achievements">🏅 Achievements</a>
       <a class="stats-toggle" id="stats-toggle" title="View lifetime stats">📈 Stats</a>
       <a class="leaderboard-toggle" id="leaderboard-toggle" title="View top scores">🏆 Top 10</a>
+      <a class="export-toggle" id="export-toggle" title="Export save data">💾 Export</a>
+      <a class="import-toggle" id="import-toggle" title="Import save data">📂 Import</a>
       <a class="reset-toggle" id="reset-toggle" title="Reset all saved data">🗑 Reset</a>
     </div>
     <div class="game-stats"></div>
@@ -173,6 +179,7 @@
   <script src="js/audio_manager.js"></script>
   <script src="js/achievements.js"></script>
   <script src="js/stats_manager.js"></script>
+  <script src="js/daily_challenge.js"></script>
   <script src="js/ai_player.js"></script>
   <script src="js/game_manager.js"></script>
   <script src="js/application.js"></script>
@@ -512,6 +519,61 @@
             });
             alert('All data reset. The page will now reload.');
             window.location.reload();
+          }
+        });
+      }
+
+      // Daily challenge score display
+      function updateDailyScore() {
+        var el = document.getElementById('daily-score');
+        if (!el || !window.gameManager || !window.gameManager.dailyChallenge) return;
+        var score = window.gameManager.dailyChallenge.getBestScore();
+        el.textContent = 'Best today: ' + score;
+      }
+      // Poll for gameManager initialization
+      var dailyPoll = setInterval(function() {
+        if (window.gameManager && window.gameManager.dailyChallenge) {
+          updateDailyScore();
+          clearInterval(dailyPoll);
+        }
+      }, 500);
+
+      // Export save data
+      var exportToggle = document.getElementById('export-toggle');
+      if (exportToggle) {
+        exportToggle.addEventListener('click', function() {
+          var data = {};
+          for (var i = 0; i < localStorage.length; i++) {
+            var key = localStorage.key(i);
+            data[key] = localStorage.getItem(key);
+          }
+          var json = JSON.stringify(data, null, 2);
+          if (navigator.clipboard && navigator.clipboard.writeText) {
+            navigator.clipboard.writeText(json).then(function() {
+              exportToggle.textContent = '✅ Copied!';
+              setTimeout(function() { exportToggle.textContent = '💾 Export'; }, 1500);
+            });
+          } else {
+            prompt('Copy this save data:', json);
+          }
+        });
+      }
+
+      // Import save data
+      var importToggle = document.getElementById('import-toggle');
+      if (importToggle) {
+        importToggle.addEventListener('click', function() {
+          var json = prompt('Paste your save data here:');
+          if (!json) return;
+          try {
+            var data = JSON.parse(json);
+            for (var key in data) {
+              localStorage.setItem(key, data[key]);
+            }
+            alert('Save data imported! The page will now reload.');
+            window.location.reload();
+          } catch(e) {
+            alert('Invalid save data. Please paste the full JSON.');
           }
         });
       }

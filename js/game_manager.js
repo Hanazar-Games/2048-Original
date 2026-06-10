@@ -6,6 +6,7 @@ function GameManager(size, InputManager, Actuator, StorageManager) {
   this.audioManager        = new AudioManager();
   this.achievementsManager = new AchievementsManager(this.storageManager);
   this.statsManager   = new StatsManager(this.storageManager);
+  this.dailyChallenge = new DailyChallenge(this.storageManager);
 
   this.startTiles     = 2;
   this.moveCount      = 0;
@@ -176,9 +177,13 @@ GameManager.prototype.actuate = function () {
     }
   }
 
-  // Check new high score
+  // Check new high score & daily best
   var prevBest = this.storageManager.getBestScore();
   var newRecord = (this.score > prevBest && this.score > 0);
+  var newDailyBest = false;
+  if (this.dailyChallenge) {
+    newDailyBest = this.dailyChallenge.saveBestScore(this.score);
+  }
 
   // Check end-game achievements
   var endAch = [];
@@ -213,7 +218,8 @@ GameManager.prototype.actuate = function () {
     mergeCount:    this.mergeCount,
     maxMergeValue: this.maxMergeValue,
     newAchievements: endAch,
-    newRecord:     newRecord
+    newRecord:     newRecord,
+    newDailyBest:  newDailyBest
   });
 
 };

@@ -56,6 +56,10 @@ HTMLActuator.prototype.actuate = function (grid, metadata) {
       self.spawnNewRecordCelebration();
     }
 
+    if (metadata.newDailyBest) {
+      self.spawnDailyBestCelebration();
+    }
+
   });
 };
 
@@ -485,5 +489,25 @@ HTMLActuator.prototype.spawnNewRecordCelebration = function () {
     setTimeout(function () {
       window.gameAudioManager.playTone(784, 0.3, "sine", 0.2);
     }, 300);
+  }
+};
+
+HTMLActuator.prototype.spawnDailyBestCelebration = function () {
+  var gameContainer = document.querySelector(".game-container");
+  if (!gameContainer) return;
+
+  var popup = document.createElement("div");
+  popup.className = "daily-best-popup";
+  popup.innerHTML = '<div class="daily-best-title">📅 NEW DAILY BEST!</div>' +
+                    '<div class="daily-best-sub">Come back tomorrow!</div>';
+  gameContainer.appendChild(popup);
+  setTimeout(function () {
+    if (popup.parentNode) popup.parentNode.removeChild(popup);
+  }, 2500);
+
+  if (window.gameAudioManager) {
+    window.gameAudioManager.playTone(523, 0.1, "sine", 0.12);
+    setTimeout(function () { window.gameAudioManager.playTone(659, 0.1, "sine", 0.12); }, 100);
+    setTimeout(function () { window.gameAudioManager.playTone(784, 0.15, "sine", 0.14); }, 200);
   }
 };
