@@ -60,6 +60,12 @@ HTMLActuator.prototype.actuate = function (grid, metadata) {
       self.spawnDailyBestCelebration();
     }
 
+    if (metadata.comboCount > 1) {
+      self.showCombo(metadata.comboCount);
+    }
+
+    self.updateArrows(metadata.moveCount);
+
   });
 };
 
@@ -510,4 +516,48 @@ HTMLActuator.prototype.spawnDailyBestCelebration = function () {
     setTimeout(function () { window.gameAudioManager.playTone(659, 0.1, "sine", 0.12); }, 100);
     setTimeout(function () { window.gameAudioManager.playTone(784, 0.15, "sine", 0.14); }, 200);
   }
+};
+
+HTMLActuator.prototype.showCombo = function (count) {
+  var gameContainer = document.querySelector(".game-container");
+  if (!gameContainer) return;
+
+  var popup = document.createElement("div");
+  popup.className = "combo-popup";
+  popup.innerHTML = '<div class="combo-title">COMBO x' + count + '</div>';
+  gameContainer.appendChild(popup);
+  setTimeout(function () {
+    if (popup.parentNode) popup.parentNode.removeChild(popup);
+  }, 1500);
+
+  if (window.gameAudioManager) {
+    var freq = 400 + count * 100;
+    window.gameAudioManager.playTone(freq, 0.12, "sine", 0.1);
+  }
+};
+
+HTMLActuator.prototype.updateArrows = function (moveCount) {
+  var container = document.querySelector(".game-container");
+  if (!container) return;
+
+  var arrows = container.querySelectorAll(".guide-arrow");
+  arrows.forEach(function (a) { a.parentNode.removeChild(a); });
+
+  if (moveCount > 0) return;
+
+  var arrowPositions = [
+    { cls: "arrow-up",    top: "4px", left: "50%", transform: "translateX(-50%)" },
+    { cls: "arrow-down",  bottom: "4px", left: "50%", transform: "translateX(-50%)" },
+    { cls: "arrow-left",  top: "50%", left: "4px", transform: "translateY(-50%)" },
+    { cls: "arrow-right", top: "50%", right: "4px", transform: "translateY(-50%)" }
+  ];
+
+  arrowPositions.forEach(function (pos) {
+    var arrow = document.createElement("div");
+    arrow.className = "guide-arrow " + pos.cls;
+    for (var key in pos) {
+      if (key !== "cls") arrow.style[key] = pos[key];
+    }
+    container.appendChild(arrow);
+  });
 };

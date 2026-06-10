@@ -219,7 +219,8 @@ GameManager.prototype.actuate = function () {
     maxMergeValue: this.maxMergeValue,
     newAchievements: endAch,
     newRecord:     newRecord,
-    newDailyBest:  newDailyBest
+    newDailyBest:  newDailyBest,
+    comboCount:    comboCount
   });
 
 };
@@ -268,6 +269,7 @@ GameManager.prototype.move = function (direction) {
   var vector     = this.getVector(direction);
   var traversals = this.buildTraversals(vector);
   var moved      = false;
+  var comboCount = 0;
 
   // Save the current tile positions and remove merger information
   this.prepareTiles();
@@ -299,8 +301,9 @@ GameManager.prototype.move = function (direction) {
           // Play merge sound
           if (self.audioManager) self.audioManager.playMerge(merged.value);
 
-          // Track stats and achievements
+          // Track stats, combo and achievements
           self.mergeCount++;
+          comboCount++;
           if (merged.value > self.maxMergeValue) self.maxMergeValue = merged.value;
           if (merged.value > self.maxTile) self.maxTile = merged.value;
 
@@ -327,6 +330,10 @@ GameManager.prototype.move = function (direction) {
 
   if (moved) {
     this.moveCount++;
+
+    // Track combo (multiple merges in one move)
+    var comboCount = 0;
+
     this.addRandomTile();
 
     if (!this.movesAvailable()) {
