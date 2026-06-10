@@ -52,6 +52,10 @@ HTMLActuator.prototype.actuate = function (grid, metadata) {
       self.showAchievements(metadata.newAchievements);
     }
 
+    if (metadata.newRecord) {
+      self.spawnNewRecordCelebration();
+    }
+
   });
 };
 
@@ -429,4 +433,57 @@ HTMLActuator.prototype.showLeaderboard = function () {
   panel.classList.add("panel-open");
   var ov = document.getElementById("leaderboard-overlay");
   if (ov) ov.classList.add("overlay-open");
+};
+
+HTMLActuator.prototype.spawnNewRecordCelebration = function () {
+  var gameContainer = document.querySelector(".game-container");
+  if (!gameContainer) return;
+
+  // Floating text
+  var popup = document.createElement("div");
+  popup.className = "new-record-popup";
+  popup.innerHTML = '<div class="new-record-title">🏆 NEW RECORD!</div>' +
+                    '<div class="new-record-sub">Personal Best!</div>';
+  gameContainer.appendChild(popup);
+  setTimeout(function () {
+    if (popup.parentNode) popup.parentNode.removeChild(popup);
+  }, 2500);
+
+  // Golden particles
+  var colors = ["#ffbe0b", "#ff006e", "#00d4ff", "#ffffff"];
+  for (var i = 0; i < 20; i++) {
+    var p = document.createElement("div");
+    p.className = "merge-particle";
+    var color = colors[Math.floor(Math.random() * colors.length)];
+    var angle = Math.random() * Math.PI * 2;
+    var distance = 50 + Math.random() * 100;
+    p.style.left = "50%";
+    p.style.top = "50%";
+    p.style.background = color;
+    p.style.width = "8px";
+    p.style.height = "8px";
+    p.style.setProperty("--tx", Math.cos(angle) * distance + "px");
+    p.style.setProperty("--ty", Math.sin(angle) * distance + "px");
+    p.style.animationDelay = (Math.random() * 0.15) + "s";
+    gameContainer.appendChild(p);
+    setTimeout(function (el) {
+      return function () {
+        if (el.parentNode) el.parentNode.removeChild(el);
+      };
+    }(p), 900);
+  }
+
+  // Special sound
+  if (window.gameAudioManager) {
+    window.gameAudioManager.playTone(392, 0.15, "sine", 0.15);
+    setTimeout(function () {
+      window.gameAudioManager.playTone(523, 0.15, "sine", 0.15);
+    }, 100);
+    setTimeout(function () {
+      window.gameAudioManager.playTone(659, 0.2, "sine", 0.18);
+    }, 200);
+    setTimeout(function () {
+      window.gameAudioManager.playTone(784, 0.3, "sine", 0.2);
+    }, 300);
+  }
 };

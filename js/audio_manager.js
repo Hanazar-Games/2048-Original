@@ -157,3 +157,66 @@ AudioManager.prototype.playClick = function () {
   osc.start(t);
   osc.stop(t + 0.05);
 };
+
+// Background ambient music
+AudioManager.prototype.startMusic = function () {
+  if (this.muted || this.musicPlaying) return;
+  if (!this.initialized) this.init();
+  if (!this.audioCtx) return;
+
+  this.musicPlaying = true;
+  var ctx = this.audioCtx;
+  var self = this;
+
+  // Simple ambient chord progression
+  var chords = [
+    [261.63, 329.63, 392.00], // C major
+    [220.00, 261.63, 329.63], // A minor
+    [196.00, 246.94, 293.66], // G major
+    [174.61, 220.00, 261.63]  // F major
+  ];
+
+  function playChord(index) {
+    if (!self.musicPlaying || self.muted) return;
+    var chord = chords[index % chords.length];
+    var t = ctx.currentTime;
+
+    chord.forEach(function (freq) {
+      var osc = ctx.createOscillator();
+      var gain = ctx.createGain();
+      osc.type = "sine";
+      osc.frequency.value = freq;
+      gain.gain.setValueAtTime(0, t);
+      gain.gain.linearRampToValueAtTime(0.015, t + 0.8);
+      gain.gain.linearRampToValueAtTime(0, t + 3.5);
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.start(t);
+      osc.stop(t + 3.5);
+    });
+
+    self.musicTimer = setTimeout(function () {
+      playChord(index + 1);
+    }, 3500);
+  }
+
+  playChord(0);
+};
+
+AudioManager.prototype.stopMusic = function () {
+  this.musicPlaying = false;
+  if (this.musicTimer) {
+    clearTimeout(this.musicTimer);
+    this.musicTimer = null;
+  }
+};
+
+AudioManager.prototype.toggleMusic = function () {
+  if (this.musicPlaying) {
+    this.stopMusic();
+    return false;
+  } else {
+    this.startMusic();
+    return true;
+  }
+};

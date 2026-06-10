@@ -176,6 +176,10 @@ GameManager.prototype.actuate = function () {
     }
   }
 
+  // Check new high score
+  var prevBest = this.storageManager.getBestScore();
+  var newRecord = (this.score > prevBest && this.score > 0);
+
   // Check end-game achievements
   var endAch = [];
   if (this.achievementsManager) {
@@ -208,7 +212,8 @@ GameManager.prototype.actuate = function () {
     maxTile:       this.maxTile,
     mergeCount:    this.mergeCount,
     maxMergeValue: this.maxMergeValue,
-    newAchievements: endAch
+    newAchievements: endAch,
+    newRecord:     newRecord
   });
 
 };

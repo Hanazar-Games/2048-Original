@@ -138,6 +138,7 @@
     </p>
     <div class="settings-bar">
       <a class="theme-toggle" id="theme-toggle" title="Toggle theme">🌙 Theme</a>
+      <a class="music-toggle" id="music-toggle" title="Toggle ambient music">🎵 Music</a>
       <a class="sound-toggle" id="sound-toggle" title="Toggle sound">🔊 Sound</a>
       <a class="share-button" id="share-button" title="Copy score to clipboard">📋 Share</a>
       <a class="achievements-toggle" id="achievements-toggle" title="View achievements">🏅 Achievements</a>
@@ -260,12 +261,18 @@
 
   <script>
     (function() {
-      // Theme toggle
+      // Theme toggle + system preference detection
       var themeToggle = document.getElementById('theme-toggle');
-      var isDark = true; // default dark
+      var isDark = true;
       try {
         var saved = localStorage.getItem('hanazar_theme');
-        if (saved === 'light') isDark = false;
+        if (saved === 'light') {
+          isDark = false;
+        } else if (saved === 'dark') {
+          isDark = true;
+        } else if (window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches) {
+          isDark = false;
+        }
       } catch(e) {}
 
       function applyTheme() {
@@ -309,6 +316,32 @@
           } catch(e) {}
         }
         updateSoundIcon();
+      });
+
+      // Music toggle
+      var musicToggle = document.getElementById('music-toggle');
+      var musicOn = false;
+      try {
+        musicOn = localStorage.getItem('hanazar_music') === 'true';
+      } catch(e) {}
+
+      function updateMusicIcon() {
+        musicToggle.textContent = musicOn ? '🎵 Music' : '🔇 Music';
+        if (musicOn) {
+          musicToggle.classList.add('music-active');
+          if (window.gameAudioManager) window.gameAudioManager.startMusic();
+        } else {
+          musicToggle.classList.remove('music-active');
+          if (window.gameAudioManager) window.gameAudioManager.stopMusic();
+        }
+      }
+
+      musicToggle.addEventListener('click', function() {
+        musicOn = !musicOn;
+        try {
+          localStorage.setItem('hanazar_music', musicOn ? 'true' : 'false');
+        } catch(e) {}
+        updateMusicIcon();
       });
 
       // Share button
@@ -486,6 +519,7 @@
       // Initialize
       applyTheme();
       updateSoundIcon();
+      updateMusicIcon();
     })();
   </script>
 </body>
