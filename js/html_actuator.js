@@ -9,8 +9,13 @@ function HTMLActuator() {
   this.undoButton       = document.querySelector(".undo-button");
   this.statsContainer   = document.querySelector(".game-stats");
   this.achievementsPanel = document.querySelector(".achievements-panel");
+  this.statsPanel       = document.querySelector(".stats-panel");
+  this.leaderboardPanel  = document.querySelector(".leaderboard-panel");
 
   this.score = 0;
+
+  // Expose for external UI controls
+  window.htmlActuatorInstance = this;
 }
 
 HTMLActuator.prototype.actuate = function (grid, metadata) {
@@ -327,4 +332,71 @@ HTMLActuator.prototype.clearMessage = function () {
   // IE only takes one value to remove at a time.
   this.messageContainer.classList.remove("game-won");
   this.messageContainer.classList.remove("game-over");
+};
+
+HTMLActuator.prototype.showStatsPanel = function () {
+  if (!window.gameManager || !window.gameManager.statsManager) return;
+  var mgr = window.gameManager.statsManager;
+  var stats = mgr.getStats();
+  var panel = this.statsPanel;
+  if (!panel) return;
+
+  var avgScore = stats.totalGames > 0 ? Math.floor(stats.totalScore / stats.totalGames) : 0;
+  var winRate = stats.totalGames > 0 ? Math.floor((stats.wins2048 / stats.totalGames) * 100) : 0;
+
+  panel.innerHTML =
+    '<div class="panel-header">' +
+    '<span class="panel-title">📈 Lifetime Stats</span>' +
+    '<a class="panel-close" onclick="document.querySelector(\'.stats-panel\').classList.remove(\'panel-open\');document.getElementById(\'stats-overlay\').classList.remove(\'overlay-open\')">✕</a>' +
+    '</div>' +
+    '<div class="panel-body">' +
+    '<div class="stats-row"><span>Games Played</span><strong>' + stats.totalGames + '</strong></div>' +
+    '<div class="stats-row"><span>Total Score</span><strong>' + stats.totalScore + '</strong></div>' +
+    '<div class="stats-row"><span>Avg Score</span><strong>' + avgScore + '</strong></div>' +
+    '<div class="stats-row"><span>Highest Score</span><strong>' + stats.highestScore + '</strong></div>' +
+    '<div class="stats-row"><span>Highest Tile</span><strong>' + stats.highestTile + '</strong></div>' +
+    '<div class="stats-row"><span>2048 Wins</span><strong>' + stats.wins2048 + '</strong></div>' +
+    '<div class="stats-row"><span>Win Rate</span><strong>' + winRate + '%</strong></div>' +
+    '<div class="stats-row"><span>Best Efficiency</span><strong>' + stats.bestEfficiency + ' pts/move</strong></div>' +
+    '<div class="stats-row"><span>Total Time</span><strong>' + mgr.formatTime(stats.totalTime) + '</strong></div>' +
+    '</div>';
+  panel.classList.add("panel-open");
+  var ov = document.getElementById("stats-overlay");
+  if (ov) ov.classList.add("overlay-open");
+};
+
+HTMLActuator.prototype.showLeaderboard = function () {
+  if (!window.gameManager || !window.gameManager.statsManager) return;
+  var mgr = window.gameManager.statsManager;
+  var board = mgr.getLeaderboard();
+  var panel = this.leaderboardPanel;
+  if (!panel) return;
+
+  var html =
+    '<div class="panel-header">' +
+    '<span class="panel-title">🏆 Top 10 Scores</span>' +
+    '<a class="panel-close" onclick="document.querySelector(\'.leaderboard-panel\').classList.remove(\'panel-open\');document.getElementById(\'leaderboard-overlay\').classList.remove(\'overlay-open\')">✕</a>' +
+    '</div>' +
+    '<div class="panel-body">';
+
+  if (board.length === 0) {
+    html += '<div style="text-align:center; color:rgba(255,255,255,0.4); padding:20px;">No games recorded yet. Play your first!</div>';
+  } else {
+    html += '<div class="leaderboard-header"><span>#</span><span>Score</span><span>Max</span><span>Moves</span><span>Date</span></div>';
+    board.forEach(function (entry, i) {
+      var crown = i === 0 ? '👑 ' : '';
+      html += '<div class="leaderboard-row' + (i === 0 ? ' first-place' : '') + '">' +
+              '<span>' + crown + (i + 1) + '</span>' +
+              '<span><strong>' + entry.score + '</strong></span>' +
+              '<span>' + entry.maxTile + '</span>' +
+              '<span>' + entry.moves + '</span>' +
+              '<span>' + entry.date + '</span>' +
+              '</div>';
+    });
+  }
+  html += '</div>';
+  panel.innerHTML = html;
+  panel.classList.add("panel-open");
+  var ov = document.getElementById("leaderboard-overlay");
+  if (ov) ov.classList.add("overlay-open");
 };

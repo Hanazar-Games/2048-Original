@@ -80,3 +80,11 @@ LocalStorageManager.prototype.getAchievements = function () {
 LocalStorageManager.prototype.setAchievements = function (data) {
   this.storage.setItem("hanazar_achievements", JSON.stringify(data));
 };
+
+LocalStorageManager.prototype.getItem = function (key) {
+  return this.storage.getItem(key);
+};
+
+LocalStorageManager.prototype.setItem = function (key, value) {
+  this.storage.setItem(key, value);
+};

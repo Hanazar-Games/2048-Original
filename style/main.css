@@ -1811,6 +1811,127 @@ body::before {
   transform: translateY(-1px);
 }
 
+.stats-toggle, .leaderboard-toggle {
+  display: inline-block;
+  background: #3d3d5c;
+  border-radius: 20px;
+  padding: 6px 16px;
+  text-decoration: none;
+  color: #e0d8d0;
+  font-size: 13px;
+  font-weight: bold;
+  cursor: pointer;
+  user-select: none;
+  transition: background 0.15s ease, transform 0.1s ease;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+.stats-toggle:hover, .leaderboard-toggle:hover {
+  background: #4d4d6c;
+  transform: translateY(-1px);
+}
+
+/* Stats panel & Leaderboard panel reuse achievements-panel styles */
+.stats-panel, .leaderboard-panel {
+  display: none;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 10001;
+  background: linear-gradient(135deg, #1a1a2e 0%, #2d2d44 100%);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 16px;
+  padding: 24px;
+  width: 420px;
+  max-width: 90vw;
+  max-height: 80vh;
+  overflow-y: auto;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+}
+.stats-panel.panel-open, .leaderboard-panel.panel-open {
+  display: block;
+  animation: panel-scale-in 0.3s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+.panel-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+.panel-title {
+  font-size: 18px;
+  font-weight: 900;
+  color: #ffffff;
+}
+.panel-close {
+  font-size: 18px;
+  color: rgba(255, 255, 255, 0.5);
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 4px;
+  transition: color 0.15s ease, background 0.15s ease;
+}
+.panel-close:hover {
+  color: #ffffff;
+  background: rgba(255, 255, 255, 0.1);
+}
+.panel-body {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.stats-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 12px;
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: 8px;
+}
+.stats-row span {
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.5);
+}
+.stats-row strong {
+  font-size: 15px;
+  color: #ffbe0b;
+}
+
+.leaderboard-header, .leaderboard-row {
+  display: grid;
+  grid-template-columns: 30px 1fr 60px 60px 80px;
+  gap: 8px;
+  padding: 8px 10px;
+  align-items: center;
+  font-size: 13px;
+}
+.leaderboard-header {
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.4);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  margin-bottom: 4px;
+}
+.leaderboard-row {
+  color: rgba(255, 255, 255, 0.7);
+  background: rgba(255, 255, 255, 0.02);
+  border-radius: 6px;
+}
+.leaderboard-row.first-place {
+  background: rgba(255, 190, 11, 0.08);
+  border: 1px solid rgba(255, 190, 11, 0.15);
+  color: #ffbe0b;
+}
+.leaderboard-row span {
+  text-align: center;
+}
+.leaderboard-row span:first-child {
+  text-align: left;
+}
+
 /* Overlay for achievements panel */
 .achievements-overlay {
   display: none;

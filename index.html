@@ -119,6 +119,8 @@
       <a class="sound-toggle" id="sound-toggle" title="Toggle sound">🔊 Sound</a>
       <a class="share-button" id="share-button" title="Copy score to clipboard">📋 Share</a>
       <a class="achievements-toggle" id="achievements-toggle" title="View achievements">🏅 Achievements</a>
+      <a class="stats-toggle" id="stats-toggle" title="View lifetime stats">📈 Stats</a>
+      <a class="leaderboard-toggle" id="leaderboard-toggle" title="View top scores">🏆 Top 10</a>
     </div>
     <div class="game-stats"></div>
     <div class="achievements-panel" id="achievements-panel">
@@ -128,6 +130,8 @@
       </div>
       <div class="achievements-list" id="achievements-list"></div>
     </div>
+    <div class="stats-panel" id="stats-panel"></div>
+    <div class="leaderboard-panel" id="leaderboard-panel"></div>
     <div class="shortcuts-hint">
       <span>←↑↓→</span> Move &nbsp;|&nbsp; <span>Z</span> Undo &nbsp;|&nbsp; <span>R</span> Restart &nbsp;|&nbsp; <span>A</span> AI Mode &nbsp;|&nbsp; <span>N</span> New Game
     </div>
@@ -143,6 +147,7 @@
   <script src="js/local_storage_manager.js"></script>
   <script src="js/audio_manager.js"></script>
   <script src="js/achievements.js"></script>
+  <script src="js/stats_manager.js"></script>
   <script src="js/ai_player.js"></script>
   <script src="js/game_manager.js"></script>
   <script src="js/application.js"></script>
@@ -370,6 +375,43 @@
         overlay.addEventListener('click', closeAchievements);
         document.body.appendChild(overlay);
       }
+
+      // Stats toggle
+      var statsToggle = document.getElementById('stats-toggle');
+      if (statsToggle) {
+        statsToggle.addEventListener('click', function() {
+          var actuator = document.querySelector('.game-container') ? window.HTMLActuator : null;
+          if (window.htmlActuatorInstance && window.htmlActuatorInstance.showStatsPanel) {
+            window.htmlActuatorInstance.showStatsPanel();
+          }
+        });
+      }
+
+      // Leaderboard toggle
+      var lbToggle = document.getElementById('leaderboard-toggle');
+      if (lbToggle) {
+        lbToggle.addEventListener('click', function() {
+          if (window.htmlActuatorInstance && window.htmlActuatorInstance.showLeaderboard) {
+            window.htmlActuatorInstance.showLeaderboard();
+          }
+        });
+      }
+
+      // Create overlays for stats and leaderboard
+      ['stats-overlay', 'leaderboard-overlay'].forEach(function(id) {
+        if (!document.getElementById(id)) {
+          var ov = document.createElement('div');
+          ov.id = id;
+          ov.className = 'achievements-overlay';
+          ov.addEventListener('click', function() {
+            var panelClass = id.replace('-overlay', '-panel');
+            var panel = document.querySelector('.' + panelClass);
+            if (panel) panel.classList.remove('panel-open');
+            ov.classList.remove('overlay-open');
+          });
+          document.body.appendChild(ov);
+        }
+      });
 
       // Initialize
       applyTheme();

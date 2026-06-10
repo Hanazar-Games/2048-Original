@@ -5,6 +5,7 @@ function GameManager(size, InputManager, Actuator, StorageManager) {
   this.actuator       = new Actuator;
   this.audioManager        = new AudioManager();
   this.achievementsManager = new AchievementsManager(this.storageManager);
+  this.statsManager   = new StatsManager(this.storageManager);
 
   this.startTiles     = 2;
   this.moveCount      = 0;
@@ -179,6 +180,19 @@ GameManager.prototype.actuate = function () {
   var endAch = [];
   if (this.achievementsManager) {
     endAch = this.achievementsManager.checkGameEnd(this.won, this.moveCount, this.undoUsed);
+  }
+
+  // Record game stats
+  if (this.over || this.won) {
+    if (this.statsManager) {
+      this.statsManager.recordGame(
+        this.score,
+        this.maxTile,
+        this.moveCount,
+        this.getElapsedTime(),
+        this.won
+      );
+    }
   }
 
   this.actuator.actuate(this.grid, {
