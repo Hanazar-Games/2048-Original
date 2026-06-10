@@ -93,6 +93,24 @@ GameManager.prototype.restart = function () {
   if (this.aiPlayer) this.aiPlayer.updateButton(false);
 };
 
+// Change grid size and restart
+GameManager.prototype.setGridSize = function (size) {
+  if (this.aiPlayer) this.aiPlayer.stop();
+  this.size = size;
+  this.gridSizer = new GridSizer(size);
+  this.storageManager.clearGameState();
+  this.actuator.continueGame();
+  this.moveCount = 0;
+  this.startTime = Date.now();
+  this.mergeCount = 0;
+  this.maxTile = 0;
+  this.maxMergeValue = 0;
+  this.undoUsed = false;
+  this.setup();
+  if (this.audioManager) this.audioManager.playClick();
+  if (this.aiPlayer) this.aiPlayer.updateButton(false);
+};
+
 // Keep playing after winning (allows going over 2048)
 GameManager.prototype.keepPlaying = function () {
   this.keepPlaying = true;
@@ -106,6 +124,12 @@ GameManager.prototype.isGameTerminated = function () {
 
 // Set up the game
 GameManager.prototype.setup = function () {
+  // Apply dynamic grid CSS and rebuild HTML
+  if (this.gridSizer) {
+    this.gridSizer.apply();
+    this.gridSizer.rebuildGridHTML();
+  }
+
   var previousState = this.storageManager.getGameState();
 
   // Reload the game from a previous game if present

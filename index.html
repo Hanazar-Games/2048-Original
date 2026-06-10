@@ -79,7 +79,13 @@
     <div class="above-game">
       <p class="game-intro">A Hanazar Games experience — Join the numbers and get to the <strong>2048 tile!</strong></p>
       <div class="game-actions">
-        <a class="undo-button undo-disabled">Undo</a>
+        <a class="undo-button undo-disabled">Undo (Z)</a>
+        <a class="ai-toggle">▶ Watch AI</a>
+        <div class="grid-size-selector">
+          <a class="grid-size-btn" data-size="3">3×3</a>
+          <a class="grid-size-btn active" data-size="4">4×4</a>
+          <a class="grid-size-btn" data-size="5">5×5</a>
+        </div>
         <a class="restart-button">New Game</a>
       </div>
     </div>
@@ -180,6 +186,7 @@
   <script src="js/achievements.js"></script>
   <script src="js/stats_manager.js"></script>
   <script src="js/daily_challenge.js"></script>
+  <script src="js/grid_sizer.js"></script>
   <script src="js/ai_player.js"></script>
   <script src="js/game_manager.js"></script>
   <script src="js/application.js"></script>
@@ -577,6 +584,19 @@
           }
         });
       }
+
+      // Grid size selector
+      var gridSizeBtns = document.querySelectorAll('.grid-size-btn');
+      gridSizeBtns.forEach(function(btn) {
+        btn.addEventListener('click', function() {
+          var size = parseInt(this.getAttribute('data-size'), 10);
+          if (window.gameManager && window.gameManager.setGridSize) {
+            window.gameManager.setGridSize(size);
+            gridSizeBtns.forEach(function(b) { b.classList.remove('active'); });
+            this.classList.add('active');
+          }
+        });
+      });
 
       // Initialize
       applyTheme();
