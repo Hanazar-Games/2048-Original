@@ -1,5 +1,6 @@
 function GameManager(size, InputManager, Actuator, StorageManager) {
   this.size           = size; // Size of the grid
+  this.gridSizer      = new GridSizer(size);
   this.inputManager   = new InputManager;
   this.storageManager = new StorageManager;
   this.actuator       = new Actuator;
@@ -15,6 +16,11 @@ function GameManager(size, InputManager, Actuator, StorageManager) {
   this.maxTile        = 0;
   this.maxMergeValue  = 0;
   this.undoUsed       = false;
+  this.gameRecorded   = false;
+  this.lastComboCount = 0;
+
+  window.gameManager  = this;
+  window.gameAudioManager = this.audioManager;
 
   this.inputManager.on("move", this.move.bind(this));
   this.inputManager.on("restart", this.restart.bind(this));
@@ -24,12 +30,11 @@ function GameManager(size, InputManager, Actuator, StorageManager) {
 
   this.setup();
 
-  // Expose audio manager globally for html_actuator
-  window.gameAudioManager = this.audioManager;
-
   // Create AI player
   this.aiPlayer = new AIPlayer(this);
   window.gameAIPlayer = this.aiPlayer;
+
+  this.startTimer();
 }
 
 // Save current state for undo
@@ -40,7 +45,12 @@ GameManager.prototype.saveUndoState = function () {
     over:        this.over,
     won:         this.won,
     keepPlaying: this.keepPlaying,
-    moveCount:   this.moveCount
+    moveCount:   this.moveCount,
+    startTime:   this.startTime,
+    mergeCount:  this.mergeCount,
+    maxTile:     this.maxTile,
+    maxMergeValue: this.maxMergeValue,
+    undoUsed:    this.undoUsed
   };
 };
 
@@ -56,6 +66,7 @@ GameManager.prototype.undo = function () {
   this.won         = this.undoState.won;
   this.keepPlaying = this.undoState.keepPlaying;
   this.moveCount   = this.undoState.moveCount;
+  this.recalculateMaxTile();
   this.undoState   = null;
 
   var bestMoves = this.storageManager.getBestMoves();
@@ -89,6 +100,8 @@ GameManager.prototype.restart = function () {
   this.maxTile = 0;
   this.maxMergeValue = 0;
   this.undoUsed = false;
+  this.gameRecorded = false;
+  this.lastComboCount = 0;
   this.setup();
   if (this.audioManager) this.audioManager.playClick();
   if (this.aiPlayer) this.aiPlayer.updateButton(false);
@@ -107,6 +120,8 @@ GameManager.prototype.setGridSize = function (size) {
   this.maxTile = 0;
   this.maxMergeValue = 0;
   this.undoUsed = false;
+  this.gameRecorded = false;
+  this.lastComboCount = 0;
   this.setup();
   if (this.audioManager) this.audioManager.playClick();
   if (this.aiPlayer) this.aiPlayer.updateButton(false);
@@ -115,6 +130,26 @@ GameManager.prototype.setGridSize = function (size) {
 GameManager.prototype.getElapsedTime = function () {
   if (!this.startTime) return 0;
   return Math.floor((Date.now() - this.startTime) / 1000);
+};
+
+GameManager.prototype.startTimer = function () {
+  if (this.timerInterval) clearInterval(this.timerInterval);
+  this.timerInterval = setInterval(function () {
+    if (!this.actuator || this.isGameTerminated()) return;
+    if (this.actuator.updateTimer) {
+      this.actuator.updateTimer(this.getElapsedTime());
+    }
+  }.bind(this), 1000);
+};
+
+GameManager.prototype.recalculateMaxTile = function () {
+  var max = 0;
+  if (this.grid) {
+    this.grid.eachCell(function (x, y, tile) {
+      if (tile && tile.value > max) max = tile.value;
+    });
+  }
+  this.maxTile = max;
 };
 
 // Konami code easter egg
@@ -153,13 +188,18 @@ GameManager.prototype.isGameTerminated = function () {
 
 // Set up the game
 GameManager.prototype.setup = function () {
+  var previousState = this.storageManager.getGameState();
+
+  if (previousState && previousState.grid && previousState.grid.size) {
+    this.size = previousState.grid.size;
+    this.gridSizer = new GridSizer(this.size);
+  }
+
   // Apply dynamic grid CSS and rebuild HTML
   if (this.gridSizer) {
     this.gridSizer.apply();
     this.gridSizer.rebuildGridHTML();
   }
-
-  var previousState = this.storageManager.getGameState();
 
   // Reload the game from a previous game if present
   if (previousState) {
@@ -170,6 +210,12 @@ GameManager.prototype.setup = function () {
     this.won         = previousState.won;
     this.keepPlaying = previousState.keepPlaying;
     this.moveCount   = previousState.moveCount || 0;
+    this.startTime   = previousState.startTime || Date.now();
+    this.mergeCount  = previousState.mergeCount || 0;
+    this.maxMergeValue = previousState.maxMergeValue || 0;
+    this.undoUsed    = !!previousState.undoUsed;
+    this.gameRecorded = !!previousState.gameRecorded;
+    this.recalculateMaxTile();
   } else {
     this.grid        = new Grid(this.size);
     this.score       = 0;
@@ -182,6 +228,8 @@ GameManager.prototype.setup = function () {
     this.maxTile     = 0;
     this.maxMergeValue = 0;
     this.undoUsed    = false;
+    this.gameRecorded = false;
+    this.lastComboCount = 0;
 
     // Add the initial tiles
     this.addStartTiles();
@@ -205,12 +253,16 @@ GameManager.prototype.addRandomTile = function () {
     var tile = new Tile(this.grid.randomAvailableCell(), value);
 
     this.grid.insertTile(tile);
+    if (value > this.maxTile) this.maxTile = value;
   }
 };
 
 // Sends the updated grid to the actuator
 GameManager.prototype.actuate = function () {
-  if (this.storageManager.getBestScore() < this.score) {
+  var prevBest = parseInt(this.storageManager.getBestScore(), 10) || 0;
+  var newRecord = (this.score > prevBest && this.score > 0);
+
+  if (prevBest < this.score) {
     this.storageManager.setBestScore(this.score);
   }
 
@@ -230,9 +282,7 @@ GameManager.prototype.actuate = function () {
     }
   }
 
-  // Check new high score & daily best
-  var prevBest = this.storageManager.getBestScore();
-  var newRecord = (this.score > prevBest && this.score > 0);
+  // Check daily best
   var newDailyBest = false;
   if (this.dailyChallenge) {
     newDailyBest = this.dailyChallenge.saveBestScore(this.score);
@@ -245,7 +295,7 @@ GameManager.prototype.actuate = function () {
   }
 
   // Record game stats
-  if (this.over || this.won) {
+  if ((this.over || this.won) && !this.gameRecorded) {
     if (this.statsManager) {
       this.statsManager.recordGame(
         this.score,
@@ -254,6 +304,10 @@ GameManager.prototype.actuate = function () {
         this.getElapsedTime(),
         this.won
       );
+    }
+    this.gameRecorded = true;
+    if (!this.over) {
+      this.storageManager.setGameState(this.serialize());
     }
   }
 
@@ -273,9 +327,10 @@ GameManager.prototype.actuate = function () {
     newAchievements: endAch,
     newRecord:     newRecord,
     newDailyBest:  newDailyBest,
-    comboCount:    comboCount
+    comboCount:    this.lastComboCount || 0
   });
 
+  this.lastComboCount = 0;
 };
 
 // Represent the current game as an object
@@ -286,7 +341,13 @@ GameManager.prototype.serialize = function () {
     over:        this.over,
     won:         this.won,
     keepPlaying: this.keepPlaying,
-    moveCount:   this.moveCount
+    moveCount:   this.moveCount,
+    startTime:   this.startTime,
+    mergeCount:  this.mergeCount,
+    maxTile:     this.maxTile,
+    maxMergeValue: this.maxMergeValue,
+    undoUsed:    this.undoUsed,
+    gameRecorded: this.gameRecorded
   };
 };
 
@@ -383,9 +444,7 @@ GameManager.prototype.move = function (direction) {
 
   if (moved) {
     this.moveCount++;
-
-    // Track combo (multiple merges in one move)
-    var comboCount = 0;
+    this.lastComboCount = comboCount;
 
     this.addRandomTile();
 

@@ -1,9 +1,13 @@
-var CACHE_NAME = 'hanazar-2048-v1';
+var CACHE_NAME = 'hanazar-2048-v2-1';
 var urlsToCache = [
   './',
   './index.html',
   './style/main.css',
   './favicon.ico',
+  './manifest.json',
+  './meta/apple-touch-icon.png',
+  './meta/apple-touch-startup-image-640x1096.png',
+  './meta/apple-touch-startup-image-640x920.png',
   './js/bind_polyfill.js',
   './js/classlist_polyfill.js',
   './js/animframe_polyfill.js',
@@ -15,6 +19,8 @@ var urlsToCache = [
   './js/audio_manager.js',
   './js/achievements.js',
   './js/stats_manager.js',
+  './js/daily_challenge.js',
+  './js/grid_sizer.js',
   './js/ai_player.js',
   './js/game_manager.js',
   './js/application.js'

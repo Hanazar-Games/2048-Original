@@ -11,6 +11,9 @@ AudioManager.prototype.init = function () {
   if (this.initialized) return;
   try {
     this.audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    if (this.audioCtx.state === "suspended" && this.audioCtx.resume) {
+      this.audioCtx.resume().catch(function () {});
+    }
     this.initialized = true;
   } catch (e) {
     console.warn("Web Audio API not supported");
@@ -25,9 +28,18 @@ AudioManager.prototype.toggleMute = function () {
   return this.muted;
 };
 
+AudioManager.prototype.ensureRunning = function () {
+  if (!this.initialized) this.init();
+  if (!this.audioCtx) return false;
+  if (this.audioCtx.state === "suspended" && this.audioCtx.resume) {
+    this.audioCtx.resume().catch(function () {});
+  }
+  return true;
+};
+
 AudioManager.prototype.playTone = function (freq, duration, type, volume, when) {
   if (this.muted) return;
-  if (!this.initialized || !this.audioCtx) return;
+  if (!this.ensureRunning()) return;
   var ctx = this.audioCtx;
   var t = when || ctx.currentTime;
   var osc = ctx.createOscillator();
@@ -49,8 +61,7 @@ AudioManager.prototype.playTone = function (freq, duration, type, volume, when) 
 // Short "whoosh" slide for tile movement
 AudioManager.prototype.playMove = function () {
   if (this.muted) return;
-  if (!this.initialized) this.init();
-  if (!this.audioCtx) return;
+  if (!this.ensureRunning()) return;
   var ctx = this.audioCtx;
   var t = ctx.currentTime;
   var osc = ctx.createOscillator();
@@ -72,8 +83,7 @@ AudioManager.prototype.playMove = function () {
 // Bright "ding" for merging tiles; pitch rises with tile value
 AudioManager.prototype.playMerge = function (value) {
   if (this.muted) return;
-  if (!this.initialized) this.init();
-  if (!this.audioCtx) return;
+  if (!this.ensureRunning()) return;
   var baseFreq = 300;
   var multiplier = Math.log2(value || 4) * 100;
   var freq = baseFreq + multiplier;
@@ -92,8 +102,7 @@ AudioManager.prototype.playMerge = function (value) {
 // Rising arpeggio for winning
 AudioManager.prototype.playWin = function () {
   if (this.muted) return;
-  if (!this.initialized) this.init();
-  if (!this.audioCtx) return;
+  if (!this.ensureRunning()) return;
   var ctx = this.audioCtx;
   var t = ctx.currentTime;
   var notes = [523, 659, 784, 1047]; // C5 E5 G5 C6
@@ -115,8 +124,7 @@ AudioManager.prototype.playWin = function () {
 // Descending tone for game over
 AudioManager.prototype.playGameOver = function () {
   if (this.muted) return;
-  if (!this.initialized) this.init();
-  if (!this.audioCtx) return;
+  if (!this.ensureRunning()) return;
   var ctx = this.audioCtx;
   var t = ctx.currentTime;
   var osc = ctx.createOscillator();
@@ -138,8 +146,7 @@ AudioManager.prototype.playGameOver = function () {
 // UI click sound
 AudioManager.prototype.playClick = function () {
   if (this.muted) return;
-  if (!this.initialized) this.init();
-  if (!this.audioCtx) return;
+  if (!this.ensureRunning()) return;
   var ctx = this.audioCtx;
   var t = ctx.currentTime;
   var osc = ctx.createOscillator();
@@ -161,8 +168,7 @@ AudioManager.prototype.playClick = function () {
 // Background ambient music
 AudioManager.prototype.startMusic = function () {
   if (this.muted || this.musicPlaying) return;
-  if (!this.initialized) this.init();
-  if (!this.audioCtx) return;
+  if (!this.ensureRunning()) return;
 
   this.musicPlaying = true;
   var ctx = this.audioCtx;

@@ -47,8 +47,7 @@ KeyboardInputManager.prototype.listen = function () {
     72: 3, // Vim left
     87: 0, // W
     68: 1, // D
-    83: 2, // S
-    65: 3  // A
+    83: 2  // S
   };
 
   // Respond to direction keys
@@ -66,6 +65,11 @@ KeyboardInputManager.prototype.listen = function () {
 
     // R key restarts the game
     if (!modifiers && event.which === 82) {
+      self.restart.call(self, event);
+    }
+
+    // N key also starts a new game, matching the on-screen shortcut hint
+    if (!modifiers && event.which === 78) {
       self.restart.call(self, event);
     }
 
