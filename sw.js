@@ -1,9 +1,12 @@
-var CACHE_NAME = 'hanazar-2048-v2-1';
+var CACHE_NAME = 'hanazar-2048-v2-2';
 var urlsToCache = [
   './',
   './index.html',
+  './404.html',
   './style/main.css',
   './favicon.ico',
+  './apple-touch-icon.png',
+  './apple-touch-icon-precomposed.png',
   './manifest.json',
   './meta/apple-touch-icon.png',
   './meta/apple-touch-startup-image-640x1096.png',
@@ -51,20 +54,38 @@ self.addEventListener('activate', function (event) {
 });
 
 self.addEventListener('fetch', function (event) {
+  var request = event.request;
+
+  if (request.mode === 'navigate') {
+    event.respondWith(
+      fetch(request).then(function (networkResponse) {
+        if (networkResponse && networkResponse.status !== 404) {
+          return networkResponse;
+        }
+        return caches.match('./index.html');
+      }).catch(function () {
+        return caches.match('./index.html');
+      })
+    );
+    return;
+  }
+
   event.respondWith(
-    caches.match(event.request).then(function (response) {
+    caches.match(request).then(function (response) {
       if (response) {
         return response;
       }
-      return fetch(event.request).then(function (networkResponse) {
+      return fetch(request).then(function (networkResponse) {
         if (!networkResponse || networkResponse.status !== 200 || networkResponse.type !== 'basic') {
           return networkResponse;
         }
         var responseToCache = networkResponse.clone();
         caches.open(CACHE_NAME).then(function (cache) {
-          cache.put(event.request, responseToCache);
+          cache.put(request, responseToCache);
         });
         return networkResponse;
+      }).catch(function () {
+        return caches.match('./index.html');
       });
     })
   );

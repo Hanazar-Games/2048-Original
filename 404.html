@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Redirecting to Hanazar 2048</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#1a1a2e">
+  <script>
+    (function () {
+      var path = window.location.pathname;
+      var repo = "/2048-Original/";
+      var target = repo;
+
+      if (path.indexOf(repo) === -1) {
+        target = "/";
+      }
+
+      window.location.replace(target + window.location.search + window.location.hash);
+    })();
+  </script>
+  <style>
+    html,
+    body {
+      margin: 0;
+      min-height: 100%;
+      background: #1a1a2e;
+      color: #f9f6f2;
+      font-family: "Clear Sans", "Helvetica Neue", Arial, sans-serif;
+    }
+
+    body {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      text-align: center;
+    }
+
+    main {
+      max-width: 360px;
+    }
+
+    h1 {
+      margin: 0 0 10px;
+      font-size: 28px;
+    }
+
+    p {
+      margin: 0;
+      color: rgba(249, 246, 242, 0.7);
+      line-height: 1.5;
+    }
+
+    a {
+      color: #ffbe0b;
+      font-weight: 700;
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>Hanazar 2048</h1>
+    <p>Redirecting back to the game. If nothing happens, <a href="/2048-Original/">open it here</a>.</p>
+  </main>
+</body>
+</html>
