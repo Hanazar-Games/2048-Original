@@ -151,11 +151,12 @@
     <div class="release-notes">
       <div class="release-current">
         <span class="release-label">Current Announcement</span>
-        <strong>Hanazar 2048 v2.1 Stability Update</strong>
-        <span>Fixes startup, AI shortcuts, grid sizing, save data reset, offline caching, and panel reliability across the newest feature set.</span>
+        <strong>Hanazar 2048 v2.2 Experience Polish</strong>
+        <span>Improves music and sound sync, mobile control fit, leaderboard readability, panel closing reliability, and offline resource handling.</span>
       </div>
       <details class="release-history">
         <summary>History Announcements</summary>
+        <p><strong>Hanazar 2048 v2.1</strong> fixed startup, AI shortcuts, grid sizing, save data reset, offline caching, and panel reliability across the newest feature set.</p>
         <p><strong>Hanazar 2048 v2.0</strong> introduced achievements, stats, leaderboard, daily challenge, AI watch mode, music, emoji tiles, PWA support, and expanded controls.</p>
       </details>
     </div>
@@ -185,7 +186,7 @@
     <div class="shortcuts-hint">
       <span>←↑↓→</span> Move &nbsp;|&nbsp; <span>Z</span> Undo &nbsp;|&nbsp; <span>R</span> Restart &nbsp;|&nbsp; <span>A</span> AI Mode &nbsp;|&nbsp; <span>N</span> New Game
     </div>
-    <p class="version-tag">Hanazar 2048 v2.1 — Built with 💜 by Hanazar Games</p>
+    <p class="version-tag">Hanazar 2048 v2.2 — Built with 💜 by Hanazar Games</p>
   </div>
 
   <script src="js/bind_polyfill.js"></script>
@@ -334,6 +335,12 @@
         soundToggle.textContent = soundOn ? '🔊 Sound' : '🔇 Mute';
       }
 
+      function saveMusicPreference() {
+        try {
+          localStorage.setItem('hanazar_music', musicOn ? 'true' : 'false');
+        } catch(e) {}
+      }
+
       soundToggle.addEventListener('click', function() {
         if (window.gameAudioManager) {
           soundOn = !window.gameAudioManager.toggleMute();
@@ -342,6 +349,11 @@
           try {
             localStorage.setItem('hanazar_muted', soundOn ? 'false' : 'true');
           } catch(e) {}
+        }
+        if (!soundOn && musicOn) {
+          musicOn = false;
+          saveMusicPreference();
+          updateMusicIcon();
         }
         updateSoundIcon();
       });
@@ -390,10 +402,22 @@
       } catch(e) {}
 
       function updateMusicIcon() {
+        if (musicOn && !soundOn) {
+          musicOn = false;
+          saveMusicPreference();
+        }
         musicToggle.textContent = musicOn ? '🎵 Music' : '🔇 Music';
         if (musicOn) {
-          musicToggle.classList.add('music-active');
-          if (window.gameAudioManager) window.gameAudioManager.startMusic();
+          var started = true;
+          if (window.gameAudioManager) started = window.gameAudioManager.startMusic();
+          if (started) {
+            musicToggle.classList.add('music-active');
+          } else {
+            musicOn = false;
+            saveMusicPreference();
+            musicToggle.textContent = '🔇 Music';
+            musicToggle.classList.remove('music-active');
+          }
         } else {
           musicToggle.classList.remove('music-active');
           if (window.gameAudioManager) window.gameAudioManager.stopMusic();
@@ -402,11 +426,10 @@
 
       musicToggle.addEventListener('click', function() {
         musicOn = !musicOn;
-        try {
-          localStorage.setItem('hanazar_music', musicOn ? 'true' : 'false');
-        } catch(e) {}
+        saveMusicPreference();
         updateMusicIcon();
       });
+      window.addEventListener('hanazar-audio-ready', updateMusicIcon);
 
       // Share button
       var shareBtn = document.getElementById('share-button');

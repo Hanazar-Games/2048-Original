@@ -22,6 +22,9 @@ AudioManager.prototype.init = function () {
 
 AudioManager.prototype.toggleMute = function () {
   this.muted = !this.muted;
+  if (this.muted) {
+    this.stopMusic();
+  }
   try {
     localStorage.setItem("hanazar_muted", this.muted ? "true" : "false");
   } catch (e) {}
@@ -167,8 +170,9 @@ AudioManager.prototype.playClick = function () {
 
 // Background ambient music
 AudioManager.prototype.startMusic = function () {
-  if (this.muted || this.musicPlaying) return;
-  if (!this.ensureRunning()) return;
+  if (this.muted) return false;
+  if (this.musicPlaying) return true;
+  if (!this.ensureRunning()) return false;
 
   this.musicPlaying = true;
   var ctx = this.audioCtx;
@@ -207,6 +211,7 @@ AudioManager.prototype.startMusic = function () {
   }
 
   playChord(0);
+  return true;
 };
 
 AudioManager.prototype.stopMusic = function () {
@@ -222,7 +227,6 @@ AudioManager.prototype.toggleMusic = function () {
     this.stopMusic();
     return false;
   } else {
-    this.startMusic();
-    return true;
+    return this.startMusic();
   }
 };

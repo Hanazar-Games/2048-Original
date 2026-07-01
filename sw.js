@@ -1,4 +1,4 @@
-var CACHE_NAME = 'hanazar-2048-v2-2';
+var CACHE_NAME = 'hanazar-2048-v2-2-experience';
 var urlsToCache = [
   './',
   './index.html',
@@ -85,7 +85,10 @@ self.addEventListener('fetch', function (event) {
         });
         return networkResponse;
       }).catch(function () {
-        return caches.match('./index.html');
+        return new Response('', {
+          status: 504,
+          statusText: 'Offline'
+        });
       });
     })
   );

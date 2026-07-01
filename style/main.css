@@ -941,6 +941,7 @@ hr {
   }
   .settings-bar {
     gap: 8px;
+    justify-content: stretch;
   }
   .theme-toggle,
   .emoji-toggle,
@@ -953,8 +954,13 @@ hr {
   .export-toggle,
   .import-toggle,
   .reset-toggle {
+    box-sizing: border-box;
+    flex: 1 1 calc(50% - 8px);
     font-size: 12px;
+    line-height: 1.2;
+    min-width: 112px;
     padding: 5px 12px;
+    text-align: center;
   }
 }
 
@@ -2578,6 +2584,27 @@ body::before {
   .achievements-panel {
     width: 90vw;
     padding: 16px;
+  }
+  .stats-panel, .leaderboard-panel {
+    box-sizing: border-box;
+    width: 92vw;
+    padding: 16px;
+  }
+  .panel-title {
+    font-size: 16px;
+  }
+  .leaderboard-header, .leaderboard-row {
+    grid-template-columns: 28px minmax(54px, 1fr) 44px 48px 62px;
+    gap: 4px;
+    padding: 8px 6px;
+    font-size: 11px;
+  }
+  .leaderboard-row span,
+  .leaderboard-header span {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
 }
 

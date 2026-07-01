@@ -429,6 +429,12 @@ HTMLActuator.prototype.clearMessage = function () {
   this.messageContainer.classList.remove("game-over");
 };
 
+HTMLActuator.prototype.closePanel = function (panel, overlayId) {
+  if (panel) panel.classList.remove("panel-open");
+  var overlay = document.getElementById(overlayId);
+  if (overlay) overlay.classList.remove("overlay-open");
+};
+
 HTMLActuator.prototype.showStatsPanel = function () {
   if (!window.gameManager || !window.gameManager.statsManager) return;
   var mgr = window.gameManager.statsManager;
@@ -442,7 +448,7 @@ HTMLActuator.prototype.showStatsPanel = function () {
   panel.innerHTML =
     '<div class="panel-header">' +
     '<span class="panel-title">📈 Lifetime Stats</span>' +
-    '<a class="panel-close" onclick="document.querySelector(\'.stats-panel\').classList.remove(\'panel-open\');document.getElementById(\'stats-overlay\').classList.remove(\'overlay-open\')">✕</a>' +
+    '<a class="panel-close" role="button" aria-label="Close stats panel">✕</a>' +
     '</div>' +
     '<div class="panel-body">' +
     '<div class="stats-row"><span>Games Played</span><strong>' + stats.totalGames + '</strong></div>' +
@@ -455,6 +461,11 @@ HTMLActuator.prototype.showStatsPanel = function () {
     '<div class="stats-row"><span>Best Efficiency</span><strong>' + stats.bestEfficiency + ' pts/move</strong></div>' +
     '<div class="stats-row"><span>Total Time</span><strong>' + mgr.formatTime(stats.totalTime) + '</strong></div>' +
     '</div>';
+  var self = this;
+  var close = panel.querySelector(".panel-close");
+  if (close) close.addEventListener("click", function () {
+    self.closePanel(panel, "stats-overlay");
+  });
   panel.classList.add("panel-open");
   var ov = document.getElementById("stats-overlay");
   if (ov) ov.classList.add("overlay-open");
@@ -470,7 +481,7 @@ HTMLActuator.prototype.showLeaderboard = function () {
   var html =
     '<div class="panel-header">' +
     '<span class="panel-title">🏆 Top 10 Scores</span>' +
-    '<a class="panel-close" onclick="document.querySelector(\'.leaderboard-panel\').classList.remove(\'panel-open\');document.getElementById(\'leaderboard-overlay\').classList.remove(\'overlay-open\')">✕</a>' +
+    '<a class="panel-close" role="button" aria-label="Close leaderboard panel">✕</a>' +
     '</div>' +
     '<div class="panel-body">';
 
@@ -491,6 +502,11 @@ HTMLActuator.prototype.showLeaderboard = function () {
   }
   html += '</div>';
   panel.innerHTML = html;
+  var self = this;
+  var close = panel.querySelector(".panel-close");
+  if (close) close.addEventListener("click", function () {
+    self.closePanel(panel, "leaderboard-overlay");
+  });
   panel.classList.add("panel-open");
   var ov = document.getElementById("leaderboard-overlay");
   if (ov) ov.classList.add("overlay-open");

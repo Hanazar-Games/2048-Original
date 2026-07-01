@@ -21,6 +21,11 @@ function GameManager(size, InputManager, Actuator, StorageManager) {
 
   window.gameManager  = this;
   window.gameAudioManager = this.audioManager;
+  if (window.dispatchEvent && window.Event) {
+    try {
+      window.dispatchEvent(new Event("hanazar-audio-ready"));
+    } catch (e) {}
+  }
 
   this.inputManager.on("move", this.move.bind(this));
   this.inputManager.on("restart", this.restart.bind(this));
