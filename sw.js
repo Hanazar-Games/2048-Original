@@ -1,4 +1,4 @@
-var CACHE_NAME = 'hanazar-2048-v2-2-experience';
+var CACHE_NAME = 'hanazar-2048-v2-3-console-fixes';
 var urlsToCache = [
   './',
   './index.html',
@@ -30,6 +30,11 @@ var urlsToCache = [
 ];
 
 self.addEventListener('install', function (event) {
+  if (!/^https?:$/.test(self.location.protocol)) {
+    self.skipWaiting();
+    return;
+  }
+
   event.waitUntil(
     caches.open(CACHE_NAME).then(function (cache) {
       return cache.addAll(urlsToCache);
@@ -55,6 +60,11 @@ self.addEventListener('activate', function (event) {
 
 self.addEventListener('fetch', function (event) {
   var request = event.request;
+  var requestUrl = new URL(request.url);
+
+  if (!/^https?:$/.test(requestUrl.protocol)) {
+    return;
+  }
 
   if (request.mode === 'navigate') {
     event.respondWith(
@@ -71,7 +81,7 @@ self.addEventListener('fetch', function (event) {
   }
 
   event.respondWith(
-    caches.match(request).then(function (response) {
+    caches.match(request, { ignoreSearch: true }).then(function (response) {
       if (response) {
         return response;
       }

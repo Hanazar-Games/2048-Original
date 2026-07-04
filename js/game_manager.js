@@ -18,6 +18,7 @@ function GameManager(size, InputManager, Actuator, StorageManager) {
   this.undoUsed       = false;
   this.gameRecorded   = false;
   this.lastComboCount = 0;
+  this.getElapsedTime = this.getElapsedTime.bind(this);
 
   window.gameManager  = this;
   window.gameAudioManager = this.audioManager;
