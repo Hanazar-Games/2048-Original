@@ -8,7 +8,7 @@ GridSizer.prototype.apply = function () {
   var gap = isMobile ? 10 : 15;
   var containerW = isMobile ? 280 : 500;
   var available = containerW - padding * 2;
-  var tileSize = Math.floor((available - (this.size - 1) * gap) * 100) / 100;
+  var tileSize = Math.floor(((available - (this.size - 1) * gap) / this.size) * 100) / 100;
 
   // Remove old dynamic style
   var old = document.getElementById('dynamic-grid-css');

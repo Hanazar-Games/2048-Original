@@ -1,4 +1,4 @@
-var CACHE_NAME = 'hanazar-2048-v2-3-console-fixes';
+var CACHE_NAME = 'hanazar-2048-v2-4-board-layout';
 var urlsToCache = [
   './',
   './index.html',
