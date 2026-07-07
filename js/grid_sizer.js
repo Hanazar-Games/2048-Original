@@ -24,9 +24,11 @@ GridSizer.prototype.apply = function () {
 GridSizer.prototype.generateCSS = function (tileSize, gap, padding, containerW, isMobile) {
   var css = '';
   var containerH = containerW;
+  var boardSize = containerW - padding * 2;
 
   // Game container size
   css += '.game-container { width: ' + containerW + 'px; height: ' + containerH + 'px; padding: ' + padding + 'px; }\n';
+  css += '.grid-container, .tile-container { top: ' + padding + 'px; left: ' + padding + 'px; width: ' + boardSize + 'px; height: ' + boardSize + 'px; }\n';
 
   // Grid cell
   css += '.grid-cell { width: ' + tileSize + 'px; height: ' + tileSize + 'px; margin-right: ' + gap + 'px; }\n';

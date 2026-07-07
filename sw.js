@@ -1,4 +1,4 @@
-var CACHE_NAME = 'hanazar-2048-v2-4-board-layout';
+var CACHE_NAME = 'hanazar-2048-v2-5-board-layer-lock';
 var urlsToCache = [
   './',
   './index.html',
