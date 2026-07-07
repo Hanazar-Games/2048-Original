@@ -160,10 +160,6 @@ KeyboardInputManager.prototype.listen = function () {
     var absDy = Math.abs(dy);
 
     if (Math.max(absDx, absDy) > swipeThreshold) {
-      // Haptic feedback if supported
-      if (window.navigator.vibrate) {
-        window.navigator.vibrate(15);
-      }
       // (right : left) : (down : up)
       self.emit("move", absDx > absDy ? (dx > 0 ? 1 : 3) : (dy > 0 ? 2 : 0));
     }

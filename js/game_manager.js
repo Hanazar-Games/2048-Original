@@ -160,6 +160,7 @@ GameManager.prototype.recalculateMaxTile = function () {
 
 // Konami code easter egg
 GameManager.prototype.konami = function () {
+  return;
   var tiles = document.querySelectorAll('.tile-inner');
   tiles.forEach(function (t) {
     t.style.animation = 'rainbow-shimmer 1s linear infinite';

@@ -980,6 +980,37 @@ hr {
   }
 }
 
+/* No-effects mode: keep gameplay stable and remove visual/audio affordances. */
+*, *::before, *::after {
+  -webkit-animation: none !important;
+  -moz-animation: none !important;
+  animation: none !important;
+  -webkit-transition: none !important;
+  -moz-transition: none !important;
+  transition: none !important;
+}
+
+.splash-particles,
+.splash-flash,
+.splash-progress-shine,
+.milestone-popup,
+.merge-particle,
+.new-record-popup,
+.daily-best-popup,
+.combo-popup,
+.guide-arrow,
+.edge-flash,
+.achievement-popup,
+.konami-popup,
+.music-toggle,
+.sound-toggle {
+  display: none !important;
+}
+
+.board-shake {
+  transform: none !important;
+}
+
 /* ============================================
    HANAZAR PRODUCTS — SPLASH SCREEN
    Epic loading animation with realistic progress

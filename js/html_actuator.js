@@ -146,6 +146,7 @@ HTMLActuator.prototype.addTile = function (tile) {
 };
 
 HTMLActuator.prototype.spawnMilestonePopup = function (tile) {
+  return;
   var gameContainer = document.querySelector(".game-container");
   if (!gameContainer) return;
 
@@ -194,6 +195,7 @@ HTMLActuator.prototype.updateScore = function (score) {
   this.score = score;
 
   this.scoreContainer.textContent = this.score;
+  return;
 
   if (difference > 0) {
     var addition = document.createElement("div");
@@ -211,6 +213,7 @@ HTMLActuator.prototype.updateScore = function (score) {
 };
 
 HTMLActuator.prototype.triggerEdgeFlash = function () {
+  return;
   var flash = document.getElementById('edge-flash');
   if (!flash) {
     flash = document.createElement('div');
@@ -227,6 +230,7 @@ HTMLActuator.prototype.triggerEdgeFlash = function () {
 };
 
 HTMLActuator.prototype.triggerBoardShake = function () {
+  return;
   var board = document.querySelector('.game-container');
   if (!board) return;
   board.classList.remove('board-shake');
@@ -275,6 +279,7 @@ HTMLActuator.prototype.updateUndoButton = function (available) {
 };
 
 HTMLActuator.prototype.showAchievements = function (achievements) {
+  return;
   var self = this;
   achievements.forEach(function (ach, index) {
     setTimeout(function () {
@@ -333,6 +338,7 @@ HTMLActuator.prototype.hideGameStats = function () {
 };
 
 HTMLActuator.prototype.spawnMergeParticles = function (tile) {
+  return;
   var gameContainer = document.querySelector(".game-container");
   if (!gameContainer) return;
 
@@ -384,6 +390,7 @@ HTMLActuator.prototype.message = function (won) {
 
   this.messageContainer.classList.add(type);
   this.messageContainer.getElementsByTagName("p")[0].textContent = message;
+  return;
 
   // Add random quote
   var quotes = [
@@ -513,6 +520,7 @@ HTMLActuator.prototype.showLeaderboard = function () {
 };
 
 HTMLActuator.prototype.spawnNewRecordCelebration = function () {
+  return;
   var gameContainer = document.querySelector(".game-container");
   if (!gameContainer) return;
 
@@ -566,6 +574,7 @@ HTMLActuator.prototype.spawnNewRecordCelebration = function () {
 };
 
 HTMLActuator.prototype.spawnDailyBestCelebration = function () {
+  return;
   var gameContainer = document.querySelector(".game-container");
   if (!gameContainer) return;
 
@@ -586,6 +595,7 @@ HTMLActuator.prototype.spawnDailyBestCelebration = function () {
 };
 
 HTMLActuator.prototype.showCombo = function (count) {
+  return;
   var gameContainer = document.querySelector(".game-container");
   if (!gameContainer) return;
 
@@ -609,6 +619,7 @@ HTMLActuator.prototype.updateArrows = function (moveCount) {
 
   var arrows = container.querySelectorAll(".guide-arrow");
   arrows.forEach(function (a) { a.parentNode.removeChild(a); });
+  return;
 
   if (moveCount > 0) return;
 

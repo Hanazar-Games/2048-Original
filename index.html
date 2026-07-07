@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <title>2048 Original | Hanazar Products</title>
 
-  <link href="style/main.css?v=2.5.0" rel="stylesheet" type="text/css">
+  <link href="style/main.css?v=2.6.0" rel="stylesheet" type="text/css">
   <link rel="manifest" href="manifest.json">
   <meta name="theme-color" content="#1a1a2e">
   <link rel="shortcut icon" href="favicon.ico">
@@ -152,11 +152,12 @@
     <div class="release-notes">
       <div class="release-current">
         <span class="release-label">Current Announcement</span>
-        <strong>Hanazar 2048 v2.5 Board Layer Lock</strong>
-        <span>Locks grid and tile layers to the same board origin, hardens dynamic sizing, and prevents tiles from drifting outside the play area.</span>
+        <strong>Hanazar 2048 v2.6 No Effects Fix</strong>
+        <span>Removes animations, sound, music, haptics, particles, popups, splash delay, and other effects while keeping the core game stable.</span>
       </div>
       <details class="release-history">
         <summary>History Announcements</summary>
+        <p><strong>Hanazar 2048 v2.5</strong> locked grid and tile layers to the same board origin, hardened dynamic sizing, and prevented tiles from drifting outside the play area.</p>
         <p><strong>Hanazar 2048 v2.4</strong> fixed oversized tiles, broken dynamic grid sizing, stale grid scripts, and board alignment across 3x3, 4x4, and 5x5 modes.</p>
         <p><strong>Hanazar 2048 v2.3</strong> fixed timer startup errors, extension-protocol service worker crashes, stale cached scripts, and mobile meta warnings.</p>
         <p><strong>Hanazar 2048 v2.2</strong> improved music and sound sync, mobile control fit, leaderboard readability, panel closing reliability, and offline resource handling.</p>
@@ -190,24 +191,24 @@
     <div class="shortcuts-hint">
       <span>←↑↓→</span> Move &nbsp;|&nbsp; <span>Z</span> Undo &nbsp;|&nbsp; <span>R</span> Restart &nbsp;|&nbsp; <span>A</span> AI Mode &nbsp;|&nbsp; <span>N</span> New Game
     </div>
-    <p class="version-tag">Hanazar 2048 v2.5 — Built with 💜 by Hanazar Games</p>
+    <p class="version-tag">Hanazar 2048 v2.6 — Built with 💜 by Hanazar Games</p>
   </div>
 
   <script src="js/bind_polyfill.js"></script>
   <script src="js/classlist_polyfill.js"></script>
   <script src="js/animframe_polyfill.js"></script>
-  <script src="js/keyboard_input_manager.js"></script>
-  <script src="js/html_actuator.js?v=2.5.0"></script>
+  <script src="js/keyboard_input_manager.js?v=2.6.0"></script>
+  <script src="js/html_actuator.js?v=2.6.0"></script>
   <script src="js/grid.js"></script>
   <script src="js/tile.js"></script>
   <script src="js/local_storage_manager.js"></script>
-  <script src="js/audio_manager.js?v=2.5.0"></script>
+  <script src="js/audio_manager.js?v=2.6.0"></script>
   <script src="js/achievements.js"></script>
   <script src="js/stats_manager.js"></script>
   <script src="js/daily_challenge.js"></script>
-  <script src="js/grid_sizer.js?v=2.5.0"></script>
+  <script src="js/grid_sizer.js?v=2.6.0"></script>
   <script src="js/ai_player.js"></script>
-  <script src="js/game_manager.js?v=2.5.0"></script>
+  <script src="js/game_manager.js?v=2.6.0"></script>
   <script src="js/application.js"></script>
 
   <script>
@@ -229,21 +230,6 @@
   <script>
     (function() {
       var splash = document.getElementById('splash-screen');
-      var fill = document.getElementById('splash-progress-fill');
-      var text = document.getElementById('splash-progress-text');
-      var status = document.getElementById('splash-progress-status');
-      var flash = document.getElementById('splash-flash');
-
-      var statuses = [
-        "Initializing engine...",
-        "Loading assets...",
-        "Building grid...",
-        "Spawning tiles...",
-        "Ready to play!"
-      ];
-
-      var startTime = Date.now();
-      var duration = 2500;
       var gameInitialized = false;
 
       function initGame() {
@@ -255,46 +241,9 @@
         });
       }
 
-      function updateProgress() {
-        var elapsed = Date.now() - startTime;
-        var progress = Math.min(elapsed / duration, 1);
-
-        // Ease-out cubic for realistic loading feel + micro jitter
-        var eased = 1 - Math.pow(1 - progress, 3);
-        var jitter = (progress < 0.95) ? (Math.random() - 0.5) * 1.5 : 0;
-        var percent = Math.min(100, Math.max(0, Math.floor(eased * 100 + jitter)));
-
-        fill.style.width = percent + '%';
-        text.textContent = percent + '%';
-
-        var statusIndex = Math.min(Math.floor(progress * statuses.length), statuses.length - 1);
-        status.textContent = statuses[statusIndex];
-
-        if (progress < 1) {
-          requestAnimationFrame(updateProgress);
-        } else {
-          fill.style.width = '100%';
-          text.textContent = '100%';
-          status.textContent = statuses[statuses.length - 1];
-
-          setTimeout(function() {
-            // Flash burst effect
-            flash.classList.add('splash-flash-active');
-            setTimeout(function() {
-              flash.classList.remove('splash-flash-active');
-            }, 400);
-
-            splash.classList.add('splash-fade-out');
-            document.body.classList.add('game-revealed');
-            initGame();
-            setTimeout(function() {
-              splash.style.display = 'none';
-            }, 600);
-          }, 300);
-        }
-      }
-
-      requestAnimationFrame(updateProgress);
+      if (splash) splash.style.display = 'none';
+      document.body.classList.add('game-revealed');
+      initGame();
     })();
   </script>
 
@@ -583,10 +532,8 @@
       var guideSeen = false;
       try { guideSeen = localStorage.getItem('hanazar_guide_seen') === 'true'; } catch(e) {}
 
-      if (guideModal && !guideSeen) {
-        setTimeout(function() {
-          guideModal.classList.add('guide-visible');
-        }, 3500); // show after splash screen
+      if (guideModal) {
+        guideModal.classList.remove('guide-visible');
       }
 
       if (guideClose && guideModal) {
@@ -600,7 +547,7 @@
       var resetToggle = document.getElementById('reset-toggle');
       if (resetToggle) {
         resetToggle.addEventListener('click', function() {
-          if (confirm('Reset ALL saved data?\n\nThis will erase:\n• Best scores & moves\n• Daily challenge score\n• Achievements\n• Lifetime stats & leaderboard\n• Theme, emoji, music & sound preferences\n\nThis cannot be undone.')) {
+          if (confirm('Reset ALL saved data?\n\nThis will erase:\n• Best scores & moves\n• Daily challenge score\n• Achievements\n• Lifetime stats & leaderboard\n• Theme and emoji preferences\n\nThis cannot be undone.')) {
             var keys = ['bestScore', 'bestMoves', 'gameState', 'hanazar_achievements',
                         'hanazar_stats', 'hanazar_leaderboard', 'hanazar_theme',
                         'hanazar_muted', 'hanazar_music', 'hanazar_emoji',
